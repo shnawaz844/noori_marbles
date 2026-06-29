@@ -1,0 +1,7 @@
+{
+  "name": "Noori Marbels - Premium Interior Solutions",
+  "description": "A high-end, single-page application for Noori Marbels, showcasing premium tiles, furniture, and complete interior hardware solutions in Bareilly.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
