@@ -77,7 +77,7 @@ const ProductHotspots: React.FC<ProductHotspotsProps> = ({ image, name, hotspots
                                     transform: hotspot.x < 20 ? 'translateX(0)' : hotspot.x > 80 ? 'translateX(0)' : 'translateX(-50%)'
                                 }}
                             >
-                                <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-64 border border-slate-100">
+                                <div className="rounded-xl shadow-2xl overflow-hidden w-64 border" style={{ backgroundColor: 'var(--surface-white)', borderColor: 'var(--outline-variant)' }}>
                                     {displayImage && (
                                         <div className="relative h-32">
                                             <img src={displayImage} alt={displayName} className="w-full h-full object-cover" />
@@ -89,15 +89,15 @@ const ProductHotspots: React.FC<ProductHotspotsProps> = ({ image, name, hotspots
                                         </div>
                                     )}
 
-                                    <div className="p-4 flex items-center justify-between bg-white">
+                                    <div className="p-4 flex items-center justify-between" style={{ backgroundColor: 'var(--surface-white)' }}>
                                         <div>
                                             {!displayImage && (
-                                                <div className="font-bold text-sm leading-tight text-slate-900 mb-1">{displayName}</div>
+                                                <div className="font-bold text-sm leading-tight mb-1" style={{ color: 'var(--on-surface)' }}>{displayName}</div>
                                             )}
                                             {displayPrice !== undefined && (
-                                                <div className="text-lg font-bold text-slate-900">
+                                                <div className="text-lg font-bold" style={{ color: 'var(--on-surface)' }}>
                                                     ₹{displayPrice.toLocaleString('en-IN')}
-                                                    {linkedProduct?.unit && <span className="text-xs text-slate-500 font-normal ml-1">/ {linkedProduct.unit}</span>}
+                                                    {linkedProduct?.unit && <span className="text-xs font-normal ml-1" style={{ color: 'var(--outline)' }}>/ {linkedProduct.unit}</span>}
                                                 </div>
                                             )}
                                         </div>
@@ -121,7 +121,8 @@ const ProductHotspots: React.FC<ProductHotspotsProps> = ({ image, name, hotspots
                                                     </button>
                                                     <Link
                                                         to={`/product/${linkedProduct.id}`}
-                                                        className="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors"
+                                                        className="p-2 rounded-lg transition-colors"
+                                                        style={{ backgroundColor: 'var(--outline-variant)', color: 'var(--on-surface)' }}
                                                         title="View details"
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
@@ -135,10 +136,11 @@ const ProductHotspots: React.FC<ProductHotspotsProps> = ({ image, name, hotspots
 
                                 {/* Tooltip Arrow */}
                                 <div
-                                    className="absolute top-full w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white"
+                                    className="absolute top-full w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px]"
                                     style={{
                                         left: hotspot.x < 20 ? '15%' : hotspot.x > 80 ? '85%' : '50%',
-                                        transform: 'translateX(-50%)'
+                                        transform: 'translateX(-50%)',
+                                        borderTopColor: 'var(--surface-white)'
                                     }}
                                 />
                             </div>
@@ -149,7 +151,7 @@ const ProductHotspots: React.FC<ProductHotspotsProps> = ({ image, name, hotspots
 
             {/* Coordinate Helper (Dev Mode Tip) */}
             <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none z-20">
-                <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-semibold text-slate-800 shadow-sm opacity-0 group-hover/main:opacity-100 transition-opacity duration-300">
+                <div className="backdrop-blur-sm px-4 py-2 rounded-full text-xs font-semibold shadow-sm opacity-0 group-hover/main:opacity-100 transition-opacity duration-300" style={{ backgroundColor: 'var(--surface-white)', color: 'var(--on-surface)' }}>
                     Hover dots for details | Click anywhere for coordinates
                 </div>
                 {lastClickedCoords && (

@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProducts } from '../contexts/ProductContext';
 import { useCart } from '../contexts/CartContext';
-import { ArrowLeft, ShoppingCart, Check } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Check, MessageSquare } from 'lucide-react';
 import ProductCarousel from '../components/ProductCarousel';
 import ProductHotspots from '../components/ProductHotspots';
 
@@ -13,39 +13,72 @@ const ProductDetailPage: React.FC = () => {
     const { products, getProductById } = useProducts();
 
     const product = getProductById(productId || '');
-    const relatedProducts = product ? products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4) : [];
+    const relatedProducts = product
+        ? products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
+        : [];
 
     if (!product) {
         return (
-            <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-white rounded-xl p-16 text-center">
-                        <h1 className="text-3xl font-serif font-bold text-slate-900 mb-4">Product Not Found</h1>
-                        <Link to="/products" className="text-amber-500 font-semibold hover:text-amber-600">
-                            Browse All Products
-                        </Link>
-                    </div>
+            <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto', padding: '120px 80px', textAlign: 'center' }} className="px-6 md:px-[80px]">
+                    <h1 className="font-caslon" style={{ fontSize: '40px', fontWeight: 400, color: 'var(--on-surface)', marginBottom: '24px' }}>
+                        Product Not Found
+                    </h1>
+                    <Link
+                        to="/products"
+                        className="label-caps"
+                        style={{ color: 'var(--on-surface)', textDecoration: 'underline' }}
+                    >
+                        Browse All Products
+                    </Link>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Back Button */}
-                <Link
-                    to="/products"
-                    className="inline-flex items-center gap-2 text-slate-600 hover:text-amber-500 mb-8 transition-colors"
-                >
-                    <ArrowLeft size={20} />
-                    Back to Products
-                </Link>
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
+            {/* Back nav */}
+            <div
+                style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '20px 80px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
+                className="px-6 md:px-[80px]"
+            >
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <Link
+                        to="/products"
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            textDecoration: 'none',
+                            fontFamily: 'Inter, sans-serif',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            color: 'var(--outline)',
+                            transition: 'color 0.2s',
+                        }}
+                        onMouseOver={e => (e.currentTarget.style.color = 'var(--on-surface)')}
+                        onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
+                    >
+                        <ArrowLeft size={14} strokeWidth={1.5} />
+                        All Products
+                    </Link>
+                </div>
+            </div>
 
-                {/* Product Details */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-                    {/* Product Image */}
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div
+                style={{ maxWidth: '1400px', margin: '0 auto', padding: '80px 80px 120px' }}
+                className="px-6 md:px-[80px]"
+            >
+                {/* Product detail grid */}
+                <div
+                    style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', marginBottom: '120px', alignItems: 'start' }}
+                    className="grid-cols-1 lg:grid-cols-2"
+                >
+                    {/* Image */}
+                    <div style={{ overflow: 'hidden', position: 'sticky', top: '100px' }}>
                         {product.hotspots && product.hotspots.length > 0 ? (
                             <ProductHotspots
                                 image={product.image}
@@ -56,104 +89,191 @@ const ProductDetailPage: React.FC = () => {
                             <img
                                 src={product.image}
                                 alt={product.name}
-                                className="w-full h-[500px] object-cover"
+                                style={{ width: '100%', aspectRatio: '4/5', objectFit: 'cover', display: 'block' }}
                             />
                         )}
                     </div>
 
-                    {/* Product Info */}
-                    <div className="space-y-6">
-                        <div>
-                            <div className="text-sm text-amber-600 font-semibold uppercase tracking-wider mb-2">
+                    {/* Info */}
+                    <div>
+                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>
+                            <Link
+                                to={`/category/${encodeURIComponent(product.category)}`}
+                                style={{ color: 'var(--outline)', textDecoration: 'none' }}
+                                onMouseOver={e => (e.currentTarget.style.color = 'var(--on-surface)')}
+                                onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
+                            >
                                 {product.category}
+                            </Link>
+                        </p>
+                        <h1
+                            className="font-caslon"
+                            style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 400, color: 'var(--on-surface)', lineHeight: 1.2, marginBottom: '24px' }}
+                        >
+                            {product.name}
+                        </h1>
+                        <p style={{ color: 'var(--on-surface-variant)', fontSize: '16px', lineHeight: '28px', marginBottom: '40px' }}>
+                            {product.description}
+                        </p>
+
+                        {/* Price */}
+                        <div style={{ borderTop: '1px solid var(--outline-variant)', borderBottom: '1px solid var(--outline-variant)', padding: '24px 0', marginBottom: '32px' }}>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' }}>
+                                <span style={{ fontSize: '28px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'Inter, sans-serif' }}>
+                                    ₹{product.price.toLocaleString('en-IN')}
+                                    {product.unit && (
+                                        <span style={{ fontSize: '14px', fontWeight: 400, color: 'var(--outline)' }}> / {product.unit}</span>
+                                    )}
+                                </span>
+                                {product.originalPrice && (
+                                    <span style={{ fontSize: '16px', color: 'var(--outline)', textDecoration: 'line-through' }}>
+                                        ₹{product.originalPrice.toLocaleString('en-IN')}
+                                    </span>
+                                )}
                             </div>
-                            <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">
-                                {product.name}
-                            </h1>
-                            <p className="text-slate-600 text-lg leading-relaxed">
-                                {product.description}
+                            <p className="label-caps" style={{ color: 'var(--outline)', marginTop: '8px' }}>
+                                Inclusive of all taxes
                             </p>
                         </div>
 
-                        {/* Price */}
-                        <div className="bg-slate-50 rounded-xl p-6">
-                            <div className="flex items-baseline gap-4 mb-2">
-                                <div className="text-4xl font-bold text-slate-900">
-                                    ₹{product.price.toLocaleString('en-IN')}
-                                </div>
-                                {product.originalPrice && (
-                                    <>
-                                        <div className="text-xl text-slate-400 line-through">
-                                            ₹{product.originalPrice.toLocaleString('en-IN')}
-                                        </div>
-                                        <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
-                                            Save {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                            <p className="text-sm text-slate-500">Price inclusive of all taxes</p>
-                        </div>
-
-                        {/* Stock Status */}
-                        <div className="flex items-center gap-2">
+                        {/* Stock */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '32px' }}>
                             {product.inStock ? (
                                 <>
-                                    <Check size={20} className="text-green-600" />
-                                    <span className="text-green-600 font-semibold">In Stock</span>
+                                    <Check size={14} strokeWidth={2} color="var(--on-surface)" />
+                                    <span className="label-caps" style={{ color: 'var(--on-surface)' }}>In Stock</span>
                                 </>
                             ) : (
-                                <span className="text-red-600 font-semibold">Out of Stock</span>
+                                <span className="label-caps" style={{ color: 'var(--error)' }}>Out of Stock</span>
                             )}
                         </div>
 
-                        {/* Add to Cart Button */}
-                        <div className="flex gap-4">
+                        {/* Actions: Add to Cart & WhatsApp Enquiry */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
                             <button
                                 onClick={() => addToCart(product)}
                                 disabled={!product.inStock}
-                                className={`flex-1 py-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors ${product.inStock
-                                    ? 'bg-amber-500 text-white hover:bg-amber-600'
-                                    : 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                    }`}
+                                style={{
+                                    width: '100%',
+                                    padding: '18px',
+                                    border: '1px solid var(--on-surface)',
+                                    backgroundColor: product.inStock ? 'var(--on-surface)' : 'var(--outline-variant)',
+                                    color: product.inStock ? 'var(--surface-white)' : 'var(--outline)',
+                                    fontFamily: 'Inter, sans-serif',
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    letterSpacing: '0.12em',
+                                    textTransform: 'uppercase',
+                                    cursor: product.inStock ? 'pointer' : 'not-allowed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '10px',
+                                    transition: 'background 0.25s, color 0.25s',
+                                }}
+                                onMouseOver={e => {
+                                    if (product.inStock) {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.color = 'var(--on-surface)';
+                                    }
+                                }}
+                                onMouseOut={e => {
+                                    if (product.inStock) {
+                                        e.currentTarget.style.background = 'var(--on-surface)';
+                                        e.currentTarget.style.color = 'var(--surface-white)';
+                                    }
+                                }}
                             >
-                                <ShoppingCart size={20} />
+                                <ShoppingCart size={15} strokeWidth={1.5} />
                                 {isInCart(product.id) ? 'Added to Cart' : 'Add to Cart'}
                             </button>
+
+                            <a
+                                href={`https://wa.me/918193830391?text=${encodeURIComponent(
+                                    `Hello Noori Marbles,\n\nI would like to enquire about this product:\n` +
+                                    `• Product: ${product.name}\n` +
+                                    `• Category: ${product.category}\n` +
+                                    `• Price: ₹${product.price.toLocaleString('en-IN')}/${product.unit || 'pc'}\n\n` +
+                                    `Please share more details and availability.`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    width: '100%',
+                                    padding: '18px',
+                                    border: '1px solid #25D366',
+                                    backgroundColor: '#25D366',
+                                    color: '#ffffff',
+                                    fontFamily: 'Inter, sans-serif',
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    letterSpacing: '0.12em',
+                                    textTransform: 'uppercase',
+                                    textDecoration: 'none',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '10px',
+                                    transition: 'background 0.25s, color 0.25s',
+                                }}
+                                onMouseOver={e => {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = '#25D366';
+                                }}
+                                onMouseOut={e => {
+                                    e.currentTarget.style.background = '#25D366';
+                                    e.currentTarget.style.color = '#ffffff';
+                                }}
+                            >
+                                <MessageSquare size={15} strokeWidth={1.5} />
+                                Enquire on WhatsApp
+                            </a>
                         </div>
 
-                        {/* Additional Info */}
-                        <div className="border-t pt-6 space-y-4">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-slate-600">Category:</span>
-                                <Link to={`/category/${encodeURIComponent(product.category)}`} className="font-semibold text-amber-600 hover:text-amber-700">
-                                    {product.category}
-                                </Link>
+                        {/* Product highlights */}
+                        <div>
+                            <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>
+                                Product Highlights
+                            </p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                                {[
+                                    'Premium quality guaranteed',
+                                    'Expert installation support available',
+                                    'Warranty covered',
+                                    'Easy returns within 7 days',
+                                ].map((item, idx, arr) => (
+                                    <div
+                                        key={idx}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            padding: '14px 0',
+                                            borderBottom: idx < arr.length - 1 ? '1px solid var(--outline-variant)' : 'none',
+                                        }}
+                                    >
+                                        <Check size={13} strokeWidth={2} color="var(--on-surface)" />
+                                        <span style={{ color: 'var(--on-surface-variant)', fontSize: '14px' }}>{item}</span>
+                                    </div>
+                                ))}
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-slate-600">Product ID:</span>
-                                <span className="font-semibold text-slate-900">{product.id}</span>
-                            </div>
-                        </div>
-
-                        {/* Features */}
-                        <div className="bg-amber-50 rounded-xl p-6">
-                            <h3 className="font-bold text-slate-900 mb-4">Product Highlights</h3>
-                            <ul className="space-y-2 text-sm text-slate-600">
-                                <li>✓ Premium quality guaranteed</li>
-                                <li>✓ Expert installation support available</li>
-                                <li>✓ Warranty covered</li>
-                                <li>✓ Easy returns within 7 days</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
 
                 {/* Related Products */}
                 {relatedProducts.length > 0 && (
-                    <div className="mt-16">
+                    <div style={{ borderTop: '1px solid var(--outline-variant)', paddingTop: '80px' }}>
+                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>Related</p>
+                        <h2
+                            className="font-caslon"
+                            style={{ fontSize: '32px', fontWeight: 400, color: 'var(--on-surface)', marginBottom: '48px' }}
+                        >
+                            You May Also Like
+                        </h2>
                         <ProductCarousel
-                            title="Related Products"
+                            title=""
                             products={relatedProducts}
                         />
                     </div>

@@ -4,35 +4,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noori Marbels | Premium Interior Solutions</title>
+    <title>Noori Marbles | Premium Interior Solutions — Bareilly</title>
+    <meta name="description" content="Noori Marbles is Bareilly's premier destination for Italian marble, luxury tiles, bespoke furniture, hardware, and sanitary ware. Visit our showroom for expert consultation.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
+        :root {
+            --surface: #f9f9f9;
+            --surface-white: #ffffff;
+            --on-surface: #1a1c1c;
+            --on-surface-variant: #444748;
+            --outline: #747878;
+            --outline-variant: #c4c7c7;
+            --primary: #000000;
+            --on-primary: #ffffff;
+            --secondary: #5d5f5f;
+            --error: #ba1a1a;
+            --margin-desktop: 80px;
+            --gutter: 32px;
+            --section-gap: 160px;
+        }
+
+        [data-theme="dark"], .dark {
+            --surface: #0a0a0a;
+            --surface-white: #141414;
+            --on-surface: #ffffff;
+            --on-surface-variant: #b0b3b3;
+            --outline: #8e9191;
+            --outline-variant: #2a2c2c;
+            --primary: #ffffff;
+            --on-primary: #000000;
+            --secondary: #a0a2a2;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--surface);
+            color: var(--on-surface);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .font-caslon {
+            font-family: 'Libre Caslon Text', serif;
+        }
+
+        /* Label caps utility */
+        .label-caps {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 16px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        /* Sharp everywhere — override any rounded corners */
+        input, button, select, textarea {
+            border-radius: 0 !important;
+        }
+
+        /* Smooth scroll */
+        html {
             scroll-behavior: smooth;
         }
 
-        .font-serif {
-            font-family: 'Playfair Display', serif;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--outline);
         }
 
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* Fade-in animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-
-        .premium-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        .animate-fade-up {
+            animation: fadeUp 0.7s ease forwards;
         }
-
-        .gold-text {
-            background: linear-gradient(to right, #d4af37, #f4df4e, #d4af37);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .animate-fade-up-delay-1 {
+            animation: fadeUp 0.7s 0.15s ease both;
+        }
+        .animate-fade-up-delay-2 {
+            animation: fadeUp 0.7s 0.3s ease both;
+        }
+        .animate-fade-up-delay-3 {
+            animation: fadeUp 0.7s 0.45s ease both;
         }
     </style>
     <script type="importmap">
@@ -45,11 +115,11 @@
     "react/": "https://esm.sh/react@^19.2.4/"
   }
 }
-</script>
+    </script>
     <link rel="stylesheet" href="/index.css">
 </head>
 
-<body class="bg-slate-50 text-slate-900">
+<body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>

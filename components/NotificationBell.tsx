@@ -5,24 +5,12 @@ import { useNotifications, AppNotification } from '../contexts/NotificationConte
 const typeConfig = {
   low_stock: {
     icon: AlertTriangle,
-    color: 'text-amber-500',
-    bg: 'bg-amber-50',
-    border: 'border-amber-100',
-    dot: 'bg-amber-500',
   },
   new_order: {
     icon: ShoppingBag,
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
-    border: 'border-blue-100',
-    dot: 'bg-blue-500',
   },
   new_enquiry: {
     icon: MessageSquare,
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-100',
-    dot: 'bg-emerald-500',
   },
 };
 
@@ -38,37 +26,84 @@ const NotificationItem: React.FC<{ notification: AppNotification; onDismiss: (id
   notification,
   onDismiss,
 }) => {
-  const cfg = typeConfig[notification.type];
+  const cfg = typeConfig[notification.type] || { icon: Bell };
   const Icon = cfg.icon;
 
   return (
     <div
-      className={`flex gap-3 p-4 rounded-2xl border transition-all group hover:shadow-sm ${cfg.bg} ${cfg.border} ${!notification.read ? 'ring-1 ring-inset ring-current/10' : ''}`}
+      style={{
+        display: 'flex',
+        gap: '16px',
+        padding: '16px 24px',
+        borderBottom: '1px solid var(--outline-variant)',
+        backgroundColor: !notification.read ? 'var(--outline-variant)' : 'var(--surface-white)',
+        borderLeft: !notification.read ? '3px solid var(--on-surface)' : '3px solid transparent',
+        transition: 'background-color 0.2s ease',
+        position: 'relative',
+      }}
+      className="group"
+      onMouseOver={e => (e.currentTarget.style.backgroundColor = 'var(--outline-variant)')}
+      onMouseOut={e => (e.currentTarget.style.backgroundColor = !notification.read ? 'var(--outline-variant)' : 'var(--surface-white)')}
     >
-      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-white shadow-sm ${cfg.color}`}>
-        <Icon size={16} />
+      <div
+        style={{
+          width: '36px',
+          height: '36px',
+          border: '1px solid var(--outline-variant)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          backgroundColor: 'var(--surface-white)',
+          color: 'var(--on-surface)',
+        }}
+      >
+        <Icon size={16} strokeWidth={1.5} />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-xs font-black text-slate-900 leading-tight">{notification.title}</p>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+          <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'Inter, sans-serif', margin: 0 }}>
+            {notification.title}
+          </p>
           <button
-            onClick={() => onDismiss(notification.id)}
-            className="text-slate-300 hover:text-slate-500 transition-colors shrink-0 opacity-0 group-hover:opacity-100"
+            onClick={(e) => { e.stopPropagation(); onDismiss(notification.id); }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--outline)',
+              padding: '2px',
+              transition: 'color 0.2s',
+            }}
+            title="Dismiss"
+            onMouseOver={e => (e.currentTarget.style.color = 'var(--on-surface)')}
+            onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
           >
-            <X size={12} />
+            <X size={14} />
           </button>
         </div>
-        <p className="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">{notification.message}</p>
-        <div className="flex items-center gap-1.5 mt-1.5">
-          {!notification.read && <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />}
-          <span className="text-[10px] text-slate-400 font-bold">{timeAgo(notification.timestamp)}</span>
+        <p style={{ fontSize: '12px', color: 'var(--on-surface-variant)', margin: '4px 0 0', lineHeight: '18px', fontFamily: 'Inter, sans-serif' }}>
+          {notification.message}
+        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+          {!notification.read && (
+            <span style={{ width: '6px', height: '6px', backgroundColor: 'var(--on-surface)', borderRadius: '50%' }} />
+          )}
+          <span style={{ fontSize: '10px', color: 'var(--outline)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>
+            {timeAgo(notification.timestamp)}
+          </span>
         </div>
       </div>
     </div>
   );
 };
 
-const NotificationBell: React.FC = () => {
+interface NotificationBellProps {
+  transparent?: boolean;
+  textColor?: string;
+}
+
+const NotificationBell: React.FC<NotificationBellProps> = ({ transparent = false, textColor = '#1a1c1c' }) => {
   const { notifications, unreadCount, markAllRead, clearNotification, clearAll } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -96,17 +131,34 @@ const NotificationBell: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" style={{ display: 'flex', alignItems: 'center' }}>
       {/* Bell Button */}
       <button
         ref={btnRef}
         onClick={handleOpen}
-        className="relative p-2 text-slate-700 hover:text-amber-500 transition-colors"
+        style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          position: 'relative', display: 'flex', alignItems: 'center',
+          color: textColor, padding: '4px',
+          transition: 'color 0.4s ease',
+        }}
         title="Notifications"
+        aria-label="Notifications"
       >
-        <Bell size={22} className={isOpen ? 'text-amber-500' : ''} />
+        <Bell size={20} strokeWidth={1.5} />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center px-1 animate-bounce shadow-lg shadow-rose-500/40">
+          <span
+            style={{
+              position: 'absolute', top: '-4px', right: '-6px',
+              minWidth: '16px', height: '16px', padding: '0 3px',
+              backgroundColor: textColor,
+              color: transparent ? 'var(--on-surface)' : 'var(--surface-white)',
+              fontSize: '9px', fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'Inter, sans-serif',
+              transition: 'background 0.4s ease, color 0.4s ease',
+            }}
+          >
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -116,36 +168,70 @@ const NotificationBell: React.FC = () => {
       {isOpen && (
         <div
           ref={panelRef}
-          className="absolute right-0 top-full mt-3 w-96 bg-white rounded-3xl shadow-2xl border border-slate-100 z-[200] overflow-hidden"
-          style={{ animation: 'slideDown 0.2s ease-out' }}
+          style={{
+            position: 'absolute', right: 0, top: 'calc(100% + 16px)',
+            width: '380px',
+            backgroundColor: 'var(--surface-white)',
+            border: '1px solid var(--on-surface)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
+            zIndex: 200,
+            animation: 'fadeIn 0.2s ease-out',
+          }}
+          className="max-w-[90vw]"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-900 to-slate-800">
-            <div className="flex items-center gap-2">
-              <Bell size={16} className="text-amber-500" />
-              <span className="font-black text-white text-sm tracking-tight">Notifications</span>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '20px 24px', borderBottom: '1px solid var(--on-surface)',
+            backgroundColor: 'var(--surface)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="font-caslon" style={{ fontSize: '20px', color: 'var(--on-surface)', fontWeight: 400 }}>
+                Notifications
+              </span>
               {notifications.length > 0 && (
-                <span className="bg-amber-500/20 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-500/30">
+                <span style={{
+                  backgroundColor: 'var(--on-surface)', color: 'var(--surface-white)',
+                  padding: '2px 8px', fontSize: '10px', fontWeight: 600,
+                  letterSpacing: '0.08em', textTransform: 'uppercase',
+                  fontFamily: 'Inter, sans-serif',
+                }}>
                   {notifications.length}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {notifications.length > 0 && (
                 <>
                   <button
                     onClick={markAllRead}
-                    className="text-slate-400 hover:text-amber-400 transition-colors"
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--outline)', display: 'flex', alignItems: 'center', gap: '4px',
+                      fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em',
+                      textTransform: 'uppercase', fontFamily: 'Inter, sans-serif',
+                      transition: 'color 0.2s',
+                    }}
                     title="Mark all read"
+                    onMouseOver={e => (e.currentTarget.style.color = 'var(--on-surface)')}
+                    onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
                   >
-                    <CheckCheck size={15} />
+                    <CheckCheck size={14} /> Read
                   </button>
                   <button
                     onClick={clearAll}
-                    className="text-slate-400 hover:text-rose-400 transition-colors"
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--outline)', display: 'flex', alignItems: 'center', gap: '4px',
+                      fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em',
+                      textTransform: 'uppercase', fontFamily: 'Inter, sans-serif',
+                      transition: 'color 0.2s',
+                    }}
                     title="Clear all"
+                    onMouseOver={e => (e.currentTarget.style.color = 'var(--error)')}
+                    onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={14} /> Clear
                   </button>
                 </>
               )}
@@ -153,12 +239,16 @@ const NotificationBell: React.FC = () => {
           </div>
 
           {/* Notification List */}
-          <div className="max-h-[420px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
+          <div style={{ maxHeight: '420px', overflowY: 'auto' }} className="custom-scrollbar">
             {notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-slate-300">
-                <Bell size={36} className="mb-3 opacity-40" />
-                <p className="text-sm font-bold text-slate-400">No notifications yet</p>
-                <p className="text-[11px] text-slate-300 mt-1">New orders, enquiries & low stock alerts will appear here.</p>
+              <div style={{ padding: '48px 24px', textAlign: 'center' }}>
+                <Bell size={28} strokeWidth={1} style={{ color: 'var(--outline)', margin: '0 auto 12px' }} />
+                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)', fontFamily: 'Inter, sans-serif', margin: 0 }}>
+                  No notifications yet
+                </p>
+                <p style={{ fontSize: '12px', color: 'var(--outline)', margin: '6px 0 0', fontFamily: 'Inter, sans-serif' }}>
+                  New orders, enquiries & low stock alerts will appear here.
+                </p>
               </div>
             ) : (
               notifications.map(n => (
@@ -170,9 +260,9 @@ const NotificationBell: React.FC = () => {
       )}
 
       <style>{`
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-8px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0) scale(1); }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Product } from '../types';
 import { useCart } from '../contexts/CartContext';
 
@@ -19,69 +19,135 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     };
 
     return (
-        <Link to={`/product/${product.id}`} className="group block">
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-                <div className="relative h-64 overflow-hidden bg-slate-100">
-                    <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
+        <Link
+            to={`/product/${product.id}`}
+            style={{ textDecoration: 'none', display: 'block' }}
+            className="group"
+        >
+            {/* Image area */}
+            <div
+                style={{
+                    position: 'relative',
+                    overflow: 'hidden',
+                    backgroundColor: 'var(--outline-variant)',
+                    paddingBottom: '125%', // portrait aspect ratio
+                }}
+            >
+                <img
+                    src={product.image}
+                    alt={product.name}
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        transition: 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    }}
+                    className="group-hover:scale-[1.04]"
+                />
 
-                    {/* Hover Overlay with Price and Actions */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center gap-3">
-                        <button
-                            onClick={handleAddToCart}
-                            className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white text-slate-900 px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:bg-amber-500 hover:text-white shadow-lg"
-                        >
-                            <ShoppingCart size={18} />
-                            {isInCart(product.id) ? 'Added' : 'Add to Cart'}
-                        </button>
-                        <Link
-                            to={`/product/${product.id}`}
-                            className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 bg-white text-slate-900 p-3 rounded-full hover:bg-amber-500 hover:text-white shadow-lg"
-                        >
-                            <Eye size={18} />
-                        </Link>
+                {/* Out of stock label */}
+                {!product.inStock && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: '16px',
+                            left: '16px',
+                            backgroundColor: 'var(--surface-white)',
+                            color: 'var(--on-surface)',
+                            padding: '4px 10px',
+                            fontFamily: 'Inter, sans-serif',
+                            fontSize: '10px',
+                            fontWeight: 600,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                        }}
+                    >
+                        Out of Stock
                     </div>
+                )}
 
-                    {/* Stock Badge */}
-                    {!product.inStock && (
-                        <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                            Out of Stock
-                        </div>
-                    )}
+                {/* Hover overlay with add-to-cart */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        transition: 'background-color 0.3s',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        padding: '20px',
+                    }}
+                    className="group-hover:bg-black/30"
+                >
+                    <button
+                        onClick={handleAddToCart}
+                        style={{
+                            width: '100%',
+                            backgroundColor: 'var(--surface-white)',
+                            color: 'var(--on-surface)',
+                            border: 'none',
+                            padding: '12px 16px',
+                            fontFamily: 'Inter, sans-serif',
+                            fontSize: '10px',
+                            fontWeight: 600,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            opacity: 0,
+                            transform: 'translateY(8px)',
+                            transition: 'opacity 0.3s, transform 0.3s, background 0.2s, color 0.2s',
+                        }}
+                        className="group-hover:opacity-100 group-hover:translate-y-0"
+                        onMouseOver={e => {
+                            e.currentTarget.style.background = 'var(--on-surface)';
+                            e.currentTarget.style.color = 'var(--surface-white)';
+                        }}
+                        onMouseOut={e => {
+                            e.currentTarget.style.background = 'var(--surface-white)';
+                            e.currentTarget.style.color = 'var(--on-surface)';
+                        }}
+                    >
+                        <ShoppingCart size={13} strokeWidth={1.5} />
+                        {isInCart(product.id) ? 'In Cart' : 'Add to Cart'}
+                    </button>
                 </div>
+            </div>
 
-                <div className="p-5">
-                    <div className="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-2">
-                        {product.category}
-                    </div>
-                    <h3 className="font-bold text-lg text-slate-900 mb-2 group-hover:text-amber-600 transition-colors">
-                        {product.name}
-                    </h3>
-                    <p className="text-sm text-slate-500 mb-4 line-clamp-2">
-                        {product.description}
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="text-2xl font-bold text-slate-900">
-                                ₹{product.price.toLocaleString('en-IN')}
-                                {product.unit && <span className="text-sm text-slate-500 font-normal ml-1">/ {product.unit}</span>}
-                            </div>
-                            {product.originalPrice && (
-                                <div className="text-sm text-slate-400 line-through">
-                                    ₹{product.originalPrice.toLocaleString('en-IN')}
-                                </div>
-                            )}
-                        </div>
-                        {product.originalPrice && (
-                            <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
-                                Save {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                            </div>
+            {/* Caption */}
+            <div style={{ padding: '16px 0 0 0' }}>
+                <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '6px' }}>
+                    {product.category}
+                </p>
+                <p
+                    style={{
+                        color: 'var(--on-surface)',
+                        fontSize: '15px',
+                        fontWeight: 400,
+                        lineHeight: '22px',
+                        marginBottom: '6px',
+                        fontFamily: 'Inter, sans-serif',
+                    }}
+                >
+                    {product.name}
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ color: 'var(--on-surface)', fontSize: '14px', fontWeight: 600 }}>
+                        ₹{product.price.toLocaleString('en-IN')}
+                        {product.unit && (
+                            <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--outline)' }}> / {product.unit}</span>
                         )}
-                    </div>
+                    </span>
+                    {product.originalPrice && (
+                        <span style={{ fontSize: '12px', color: 'var(--outline)', textDecoration: 'line-through' }}>
+                            ₹{product.originalPrice.toLocaleString('en-IN')}
+                        </span>
+                    )}
                 </div>
             </div>
         </Link>

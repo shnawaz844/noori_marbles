@@ -17,106 +17,262 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
             {/* Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-[60] transition-opacity"
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        backgroundColor: 'rgba(26,28,28,0.4)',
+                        zIndex: 60,
+                        transition: 'opacity 0.3s',
+                    }}
                     onClick={onClose}
                 />
             )}
 
             {/* Drawer */}
-            <div className={`fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-[70] transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="flex flex-col h-full">
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b">
-                        <h2 className="text-2xl font-serif font-bold text-slate-900">
-                            Shopping Cart
-                        </h2>
-                        <button
-                            onClick={onClose}
-                            className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-                        >
-                            <X size={24} />
-                        </button>
-                    </div>
+            <div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    right: 0,
+                    height: '100%',
+                    width: '100%',
+                    maxWidth: '420px',
+                    backgroundColor: 'var(--surface-white)',
+                    borderLeft: '1px solid var(--outline-variant)',
+                    zIndex: 70,
+                    transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+                    transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.4s ease, border-color 0.4s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                {/* Header */}
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '24px 32px',
+                        borderBottom: '1px solid var(--outline-variant)',
+                    }}
+                >
+                    <h2
+                        className="font-caslon"
+                        style={{ fontSize: '22px', fontWeight: 400, color: 'var(--on-surface)' }}
+                    >
+                        Your Selection
+                    </h2>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            background: 'none',
+                            border: '1px solid var(--on-surface)',
+                            cursor: 'pointer',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--on-surface)',
+                            transition: 'background 0.2s, color 0.2s',
+                        }}
+                        onMouseOver={e => {
+                            e.currentTarget.style.background = 'var(--on-surface)';
+                            e.currentTarget.style.color = 'var(--surface-white)';
+                        }}
+                        onMouseOut={e => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.color = 'var(--on-surface)';
+                        }}
+                    >
+                        <X size={16} strokeWidth={1.5} />
+                    </button>
+                </div>
 
-                    {/* Cart Items */}
-                    <div className="flex-1 overflow-y-auto p-6">
-                        {cart.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full text-center">
-                                <ShoppingBag size={64} className="text-slate-300 mb-4" />
-                                <p className="text-slate-500 text-lg mb-2">Your cart is empty</p>
-                                <p className="text-slate-400 text-sm">Add some products to get started</p>
+                {/* Cart Items */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px' }}>
+                    {cart.length === 0 ? (
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%',
+                                gap: '16px',
+                                textAlign: 'center',
+                            }}
+                        >
+                            <ShoppingBag size={40} strokeWidth={1} color="var(--outline)" />
+                            <div>
+                                <p style={{ color: 'var(--on-surface)', fontSize: '16px', marginBottom: '4px' }}>
+                                    Your cart is empty
+                                </p>
+                                <p className="label-caps" style={{ color: 'var(--outline)' }}>
+                                    Add some products to get started
+                                </p>
                             </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {cart.map(item => (
-                                    <div key={item.product.id} className="flex gap-4 bg-slate-50 p-4 rounded-lg">
+                        </div>
+                    ) : (
+                        <div>
+                            {cart.map((item, idx) => (
+                                <div
+                                    key={item.product.id}
+                                    style={{
+                                        display: 'flex',
+                                        gap: '16px',
+                                        padding: '24px 0',
+                                        borderBottom: idx < cart.length - 1 ? '1px solid var(--outline-variant)' : 'none',
+                                    }}
+                                >
+                                    <Link to={`/product/${item.product.id}`} onClick={onClose} style={{ flexShrink: 0 }}>
                                         <img
                                             src={item.product.image}
                                             alt={item.product.name}
-                                            className="w-20 h-20 object-cover rounded-lg"
+                                            style={{ width: '72px', height: '88px', objectFit: 'cover', display: 'block' }}
                                         />
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-slate-900 mb-1">{item.product.name}</h3>
-                                            <p className="text-sm text-slate-500 mb-2">
-                                                ₹{item.product.price.toLocaleString('en-IN')}
-                                                {item.product.unit && <span className="text-[10px] text-slate-400 font-normal ml-1">/ {item.product.unit}</span>}
-                                            </p>
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200">
-                                                    <button
-                                                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                                                        className="p-2 hover:bg-slate-100 rounded-l-lg transition-colors"
-                                                    >
-                                                        <Minus size={14} />
-                                                    </button>
-                                                    <span className="px-3 font-semibold">{item.quantity}</span>
-                                                    <button
-                                                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                                                        className="p-2 hover:bg-slate-100 rounded-r-lg transition-colors"
-                                                    >
-                                                        <Plus size={14} />
-                                                    </button>
-                                                </div>
+                                    </Link>
+                                    <div style={{ flex: 1 }}>
+                                        <p style={{ color: 'var(--on-surface)', fontSize: '14px', fontWeight: 500, marginBottom: '4px', lineHeight: '20px' }}>
+                                            {item.product.name}
+                                        </p>
+                                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '12px' }}>
+                                            {item.product.category}
+                                        </p>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            {/* Qty control */}
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0', border: '1px solid var(--outline-variant)' }}>
+                                                <button
+                                                    onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                                                    style={{
+                                                        width: '32px', height: '32px', background: 'none', border: 'none',
+                                                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        color: 'var(--on-surface)', transition: 'background 0.2s',
+                                                    }}
+                                                    onMouseOver={e => (e.currentTarget.style.background = 'var(--outline-variant)')}
+                                                    onMouseOut={e => (e.currentTarget.style.background = 'none')}
+                                                >
+                                                    <Minus size={12} />
+                                                </button>
+                                                <span style={{
+                                                    width: '32px', textAlign: 'center',
+                                                    fontSize: '13px', fontWeight: 600, color: 'var(--on-surface)',
+                                                    borderLeft: '1px solid var(--outline-variant)', borderRight: '1px solid var(--outline-variant)',
+                                                    lineHeight: '32px',
+                                                }}>
+                                                    {item.quantity}
+                                                </span>
+                                                <button
+                                                    onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                                                    style={{
+                                                        width: '32px', height: '32px', background: 'none', border: 'none',
+                                                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        color: 'var(--on-surface)', transition: 'background 0.2s',
+                                                    }}
+                                                    onMouseOver={e => (e.currentTarget.style.background = 'var(--outline-variant)')}
+                                                    onMouseOut={e => (e.currentTarget.style.background = 'none')}
+                                                >
+                                                    <Plus size={12} />
+                                                </button>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--on-surface)' }}>
+                                                    ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
+                                                </p>
                                                 <button
                                                     onClick={() => removeFromCart(item.product.id)}
-                                                    className="text-red-500 text-xs font-semibold hover:text-red-700 transition-colors"
+                                                    className="label-caps"
+                                                    style={{
+                                                        background: 'none', border: 'none', cursor: 'pointer',
+                                                        color: 'var(--outline)', marginTop: '4px', transition: 'color 0.2s',
+                                                    }}
+                                                    onMouseOver={e => (e.currentTarget.style.color = 'var(--error)')}
+                                                    onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
                                                 >
                                                     Remove
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Footer */}
-                    {cart.length > 0 && (
-                        <div className="border-t p-6 space-y-4">
-                            <div className="flex justify-between text-lg">
-                                <span className="font-semibold">Subtotal:</span>
-                                <span className="font-bold text-xl">₹{getCartTotal().toLocaleString('en-IN')}</span>
-                            </div>
-                            <div className="space-y-2">
-                                <Link
-                                    to="/cart"
-                                    onClick={onClose}
-                                    className="block w-full bg-slate-900 text-white py-3 rounded-lg font-semibold text-center hover:bg-slate-800 transition-colors"
-                                >
-                                    View Cart
-                                </Link>
-                                <Link
-                                    to="/checkout"
-                                    onClick={onClose}
-                                    className="block w-full bg-amber-500 text-white py-3 rounded-lg font-semibold text-center hover:bg-amber-600 transition-colors"
-                                >
-                                    Checkout
-                                </Link>
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
+
+                {/* Footer */}
+                {cart.length > 0 && (
+                    <div
+                        style={{
+                            borderTop: '1px solid var(--outline-variant)',
+                            padding: '24px 32px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '12px',
+                        }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <span className="label-caps" style={{ color: 'var(--outline)', alignSelf: 'center' }}>Subtotal</span>
+                            <span style={{ fontSize: '18px', fontWeight: 600, color: 'var(--on-surface)' }}>
+                                ₹{getCartTotal().toLocaleString('en-IN')}
+                            </span>
+                        </div>
+                        <Link
+                            to="/cart"
+                            onClick={onClose}
+                            style={{
+                                display: 'block',
+                                border: '1px solid var(--on-surface)',
+                                padding: '14px',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                fontFamily: 'Inter, sans-serif',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                letterSpacing: '0.1em',
+                                textTransform: 'uppercase',
+                                color: 'var(--on-surface)',
+                                backgroundColor: 'transparent',
+                                transition: 'background 0.2s, color 0.2s',
+                            }}
+                            onMouseOver={e => {
+                                e.currentTarget.style.background = 'var(--outline-variant)';
+                            }}
+                            onMouseOut={e => {
+                                e.currentTarget.style.background = 'transparent';
+                            }}
+                        >
+                            View Cart
+                        </Link>
+                        <Link
+                            to="/checkout"
+                            onClick={onClose}
+                            style={{
+                                display: 'block',
+                                border: '1px solid var(--on-surface)',
+                                backgroundColor: 'var(--on-surface)',
+                                padding: '14px',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                fontFamily: 'Inter, sans-serif',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                letterSpacing: '0.1em',
+                                textTransform: 'uppercase',
+                                color: 'var(--surface-white)',
+                                transition: 'opacity 0.2s, background 0.2s, color 0.2s',
+                            }}
+                            onMouseOver={e => {
+                                e.currentTarget.style.opacity = '0.85';
+                            }}
+                            onMouseOut={e => {
+                                e.currentTarget.style.opacity = '1';
+                            }}
+                        >
+                            Proceed to Checkout
+                        </Link>
+                    </div>
+                )}
             </div>
         </>
     );

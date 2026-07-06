@@ -1,10 +1,37 @@
 
 import React, { useState } from 'react';
-import { Send, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { CATEGORIES } from '../constants';
 import { databaseService } from '../services/databaseService';
+import { useProducts } from '../contexts/ProductContext';
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '0 0 12px 0',
+  border: 'none',
+  borderBottom: '1px solid var(--outline-variant)',
+  background: 'transparent',
+  fontSize: '15px',
+  color: 'var(--on-surface)',
+  outline: 'none',
+  fontFamily: 'Inter, sans-serif',
+  transition: 'border-color 0.2s',
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontFamily: 'Inter, sans-serif',
+  fontSize: '10px',
+  fontWeight: 600,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase' as const,
+  color: 'var(--outline)',
+  marginBottom: '10px',
+};
 
 const EnquiryForm: React.FC = () => {
+  const { categories } = useProducts();
+  const categoryList = categories && categories.length > 0 ? categories.map(c => c.name) : CATEGORIES;
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -18,25 +45,18 @@ const EnquiryForm: React.FC = () => {
     e.preventDefault();
     try {
       let locationData = undefined;
-
-      // Attempt to get user location
       if ("geolocation" in navigator) {
         try {
           const position = await new Promise<GeolocationPosition>((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
           });
-          locationData = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-        } catch (error) {
+          locationData = { lat: position.coords.latitude, lng: position.coords.longitude };
+        } catch {
           console.log('Location permission denied or timeout');
         }
       }
-
       const finalData = { ...formData, location: locationData };
       await databaseService.saveEnquiry(finalData);
-      console.log('Enquiry Sent with Location:', finalData);
       setIsSubmitted(true);
       setTimeout(() => setIsSubmitted(false), 5000);
     } catch (error) {
@@ -45,95 +65,135 @@ const EnquiryForm: React.FC = () => {
     }
   };
 
-  return (
-    <div className="bg-white rounded-2xl shadow-2xl p-8 lg:p-12 relative overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-bl-full"></div>
-
-      {isSubmitted ? (
-        <div className="flex flex-col items-center justify-center py-12 text-center animate-fadeIn">
-          <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
-            <CheckCircle size={40} />
-          </div>
-          <h3 className="text-2xl font-serif font-bold text-slate-900 mb-2">Message Received!</h3>
-          <p className="text-slate-500 max-w-sm">
-            Thank you for reaching out to Noori Marbels. Our expert consultant will contact you within 24 hours.
-          </p>
+  if (isSubmitted) {
+    return (
+      <div style={{ padding: '64px 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <CheckCircle size={20} color="var(--on-surface)" />
+          <h3 className="font-caslon" style={{ fontSize: '24px', fontWeight: 400, color: 'var(--on-surface)' }}>
+            Message Received.
+          </h3>
         </div>
-      ) : (
-        <>
-          <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2">Book a Consultation</h2>
-          <p className="text-slate-500 mb-8">Discuss your interior project with our design specialists.</p>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Your Name</label>
-                <input
-                  required
-                  type="text"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-                  placeholder="John Doe"
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Phone Number</label>
-                <input
-                  required
-                  type="tel"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-                  placeholder="+91 00000 00000"
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                />
-              </div>
-            </div>
+        <p style={{ color: 'var(--on-surface-variant)', fontSize: '15px', lineHeight: '26px', maxWidth: '480px' }}>
+          Thank you for reaching out to Noori Marbles. Our expert consultant will contact you within 24 hours.
+        </p>
+      </div>
+    );
+  }
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Email Address</label>
-                <input
-                  required
-                  type="email"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-                  placeholder="john@example.com"
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Interested In</label>
-                <select
-                  required
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                >
-                  <option value="">Select Category</option>
-                  {CATEGORIES.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+  return (
+    <div>
+      <h2 className="font-caslon" style={{ fontSize: '32px', fontWeight: 400, color: 'var(--on-surface)', marginBottom: '8px' }}>
+        Book a Consultation
+      </h2>
+      <p style={{ color: 'var(--outline)', fontSize: '15px', marginBottom: '48px' }}>
+        Discuss your interior project with our design specialists.
+      </p>
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Project Details</label>
-              <textarea
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg h-32 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
-                placeholder="Tell us about your requirements..."
-                onChange={(e) => setFormData({...formData, message: e.target.value})}
-              ></textarea>
-            </div>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }} className="grid-cols-1 sm:grid-cols-2">
+          <div>
+            <label style={labelStyle}>Your Name</label>
+            <input
+              required
+              type="text"
+              placeholder="Full name"
+              style={inputStyle}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+              onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Phone Number</label>
+            <input
+              required
+              type="tel"
+              placeholder="+91 00000 00000"
+              style={inputStyle}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+              onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+            />
+          </div>
+        </div>
 
-            <button
-              type="submit"
-              className="w-full py-4 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }} className="grid-cols-1 sm:grid-cols-2">
+          <div>
+            <label style={labelStyle}>Email Address</label>
+            <input
+              required
+              type="email"
+              placeholder="you@example.com"
+              style={inputStyle}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+              onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Interested In</label>
+            <select
+              required
+              style={{ ...inputStyle, cursor: 'pointer', appearance: 'none' }}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+              onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
             >
-              Send Enquiry
-              <Send size={18} />
-            </button>
-          </form>
-        </>
-      )}
+              <option value="">Select category</option>
+              {categoryList.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Project Details</label>
+          <textarea
+            rows={4}
+            placeholder="Describe your requirements…"
+            style={{
+              ...inputStyle,
+              resize: 'vertical',
+              lineHeight: '24px',
+              paddingBottom: '12px',
+            }}
+            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+            onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+          />
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            style={{
+              backgroundColor: 'var(--on-surface)',
+              color: 'var(--surface-white)',
+              border: '1px solid var(--on-surface)',
+              padding: '16px 48px',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              transition: 'background 0.25s, color 0.25s',
+            }}
+            onMouseOver={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--on-surface)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = 'var(--on-surface)';
+              e.currentTarget.style.color = 'var(--surface-white)';
+            }}
+          >
+            Send Enquiry
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

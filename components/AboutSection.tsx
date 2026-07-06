@@ -1,52 +1,109 @@
 import React from 'react';
 
 const AboutSection: React.FC = () => {
-    return (
-        <section id="about" className="py-24 bg-slate-900 text-white overflow-hidden relative">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div className="relative">
-                        <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl border-8 border-white/5">
-                            <img
-                                src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=1000"
-                                alt="Showroom"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        <div className="absolute -bottom-8 -right-8 bg-amber-500 p-8 rounded-2xl hidden md:block">
-                            <h3 className="text-5xl font-serif font-bold mb-1">25+</h3>
-                            <p className="text-xs uppercase tracking-widest font-bold">Years of Trust</p>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h2 className="text-4xl md:text-5xl font-serif font-bold mb-8">
-                            Welcome to <br />
-                            <span className="text-amber-500">Noori Marbels</span>
-                        </h2>
-                        <p className="text-slate-400 text-lg leading-relaxed mb-8">
-                            Established with a vision to bring world-class interior solutions to Bareilly, Noori Marbels has become the city's premier destination for homeowners, architects, and designers.
-                        </p>
-                        <div className="space-y-6">
-                            {[
-                                'One-stop showroom for all construction finishes.',
-                                'Direct sourcing from leading global brands.',
-                                'Expert design consultation for every project.',
-                                'Commitment to quality and long-term durability.'
-                            ].map((item, idx) => (
-                                <div key={idx} className="flex items-center gap-4 group">
-                                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-amber-500 transition-colors">
-                                        <div className="w-2 h-2 rounded-full bg-amber-500 group-hover:bg-white"></div>
-                                    </div>
-                                    <span className="text-slate-300 font-medium">{item}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+  return (
+    <section
+      id="about"
+      style={{ backgroundColor: 'var(--surface)', padding: '160px 80px', transition: 'background-color 0.4s ease' }}
+      className="px-6 md:px-[80px]"
+    >
+      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}
+          className="grid-cols-1 md:grid-cols-2">
+          {/* Left — Image with stat overlay */}
+          <div style={{ position: 'relative' }}>
+            <div style={{ overflow: 'hidden', aspectRatio: '4/5' }}>
+              <img
+                src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=1000"
+                alt="Noori Marbles Showroom"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
-        </section>
-    );
+            {/* Stat box — overlaps image */}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '-24px',
+                right: '-24px',
+                backgroundColor: 'var(--on-surface)',
+                color: 'var(--surface-white)',
+                padding: '32px',
+                width: '160px',
+              }}
+              className="hidden md:block"
+            >
+              <p
+                className="font-caslon"
+                style={{ fontSize: '40px', fontWeight: 400, lineHeight: 1, marginBottom: '8px' }}
+              >
+                25+
+              </p>
+              <p className="label-caps" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                Years of Trust
+              </p>
+            </div>
+          </div>
+
+          {/* Right — Text */}
+          <div style={{ paddingLeft: '0' }}>
+            <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '24px' }}>
+              Our Story
+            </p>
+            <h2
+              className="font-caslon"
+              style={{
+                fontSize: 'clamp(28px, 3vw, 40px)',
+                fontWeight: 400,
+                lineHeight: 1.2,
+                color: 'var(--on-surface)',
+                marginBottom: '32px',
+              }}
+            >
+              Bareilly's Most Trusted<br />Interior Studio.
+            </h2>
+            <p
+              style={{
+                color: 'var(--on-surface-variant)',
+                fontSize: '16px',
+                lineHeight: '28px',
+                marginBottom: '48px',
+              }}
+            >
+              Established with a vision to bring world-class interior solutions to Bareilly, Noori Marbles has become the city's premier destination for homeowners, architects, and designers seeking uncompromising quality.
+            </p>
+
+            {/* Pillars list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+              {[
+                { num: '01', text: 'One-stop showroom for all construction finishes.' },
+                { num: '02', text: 'Direct sourcing from leading global brands.' },
+                { num: '03', text: 'Expert design consultation for every project.' },
+                { num: '04', text: 'Commitment to quality and long-term durability.' },
+              ].map((item, idx, arr) => (
+                <div
+                  key={item.num}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '24px',
+                    padding: '20px 0',
+                    borderBottom: idx < arr.length - 1 ? '1px solid var(--outline-variant)' : 'none',
+                  }}
+                >
+                  <span className="label-caps" style={{ color: 'var(--outline)', flexShrink: 0, paddingTop: '2px' }}>
+                    {item.num}
+                  </span>
+                  <p style={{ color: 'var(--on-surface)', fontSize: '15px', lineHeight: '24px', margin: 0 }}>
+                    {item.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default AboutSection;

@@ -373,7 +373,7 @@ export const SHOWROOM_DETAILS = {
   name: 'Noori Marbels',
   tagline: 'Crafting Your Dream Spaces with Timeless Elegance',
   address: 'Near Airforce Gate, Bareilly, Uttar Pradesh',
-  phone: '+91 98765 43210',
+  phone: '+91 8077 028 027',
   email: 'info@noorimarbels.com',
   timings: 'Mon - Sun: 10:00 AM - 8:30 PM'
 };

@@ -74,7 +74,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    // Preserve noori-cart
+    const savedCart = localStorage.getItem('noori-cart');
+
     await supabase.auth.signOut({ scope: 'global' });
+
+    // Clear every token and cached session data from local and session storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Restore noori-cart
+    if (savedCart) {
+      localStorage.setItem('noori-cart', savedCart);
+    }
+
     // onAuthStateChange will fire and set user/role to null automatically.
     // Use replace so the user can't go back to a protected page.
     window.location.replace('/login');

@@ -3,30 +3,50 @@ import React, { useState } from 'react';
 import { CATEGORIES } from '../constants';
 import { useProducts } from '../contexts/ProductContext';
 import ProductCard from '../components/ProductCard';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search } from 'lucide-react';
+
+const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '0 0 12px 0',
+    border: 'none',
+    borderBottom: '1px solid var(--outline-variant)',
+    background: 'transparent',
+    fontSize: '15px',
+    color: 'var(--on-surface)',
+    outline: 'none',
+    fontFamily: 'Inter, sans-serif',
+    transition: 'border-color 0.2s',
+};
+
+const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '10px',
+    fontWeight: 600,
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase' as const,
+    color: 'var(--outline)',
+    marginBottom: '10px',
+};
 
 const ProductsPage: React.FC = () => {
-    const { products } = useProducts();
+    const { products, categories } = useProducts();
+    const categoryList = categories && categories.length > 0 ? categories.map(c => c.name) : CATEGORIES;
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [sortBy, setSortBy] = useState<string>('default');
 
     let filteredProducts = products;
 
-    // Filter by category
     if (selectedCategory !== 'All') {
         filteredProducts = filteredProducts.filter(p => p.category === selectedCategory);
     }
-
-    // Filter by search term
     if (searchTerm) {
         filteredProducts = filteredProducts.filter(p =>
             p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             p.description.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }
-
-    // Sort products
     if (sortBy === 'price-low') {
         filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
     } else if (sortBy === 'price-high') {
@@ -36,83 +56,145 @@ const ProductsPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">All Products</h1>
-                    <p className="text-slate-500">Explore our complete collection of premium interior solutions</p>
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
+            {/* Page header */}
+            <div
+                style={{
+                    backgroundColor: 'var(--surface-white)',
+                    borderBottom: '1px solid var(--outline-variant)',
+                    padding: '64px 80px 48px',
+                    transition: 'background-color 0.4s ease, border-color 0.4s ease',
+                }}
+                className="px-6 md:px-[80px]"
+            >
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>
+                        Complete Collection
+                    </p>
+                    <h1
+                        className="font-caslon"
+                        style={{ fontSize: 'clamp(32px, 4vw, 56px)', fontWeight: 400, color: 'var(--on-surface)', lineHeight: 1.1 }}
+                    >
+                        All Products
+                    </h1>
                 </div>
+            </div>
 
+            <div
+                style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 80px 120px' }}
+                className="px-6 md:px-[80px]"
+            >
                 {/* Filters */}
-                <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Search */}
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr 1fr',
+                        gap: '48px',
+                        marginBottom: '64px',
+                        paddingBottom: '48px',
+                        borderBottom: '1px solid var(--outline-variant)',
+                    }}
+                    className="grid-cols-1 md:grid-cols-3"
+                >
+                    {/* Search */}
+                    <div>
+                        <label style={labelStyle}>Search</label>
+                        <div style={{ position: 'relative' }}>
+                            <Search
+                                size={14}
+                                style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: 'var(--outline)',
+                                }}
+                            />
                             <input
                                 type="text"
-                                placeholder="Search products..."
+                                placeholder="Search products…"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                                style={{ ...inputStyle, paddingLeft: '24px' }}
+                                onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                                onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
                             />
                         </div>
+                    </div>
 
-                        {/* Category Filter */}
-                        <div className="relative">
-                            <SlidersHorizontal className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
-                            <select
-                                value={selectedCategory}
-                                onChange={(e) => setSelectedCategory(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent appearance-none bg-white"
-                            >
-                                <option value="All">All Categories</option>
-                                {CATEGORIES.map(cat => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                ))}
-                            </select>
-                        </div>
+                    {/* Category */}
+                    <div>
+                        <label style={labelStyle}>Category</label>
+                        <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            style={{ ...inputStyle, cursor: 'pointer', appearance: 'none' }}
+                            onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                            onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+                        >
+                            <option value="All">All Categories</option>
+                            {categoryList.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
+                    </div>
 
-                        {/* Sort */}
-                        <div>
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent appearance-none bg-white"
-                            >
-                                <option value="default">Default Sorting</option>
-                                <option value="name">Name (A-Z)</option>
-                                <option value="price-low">Price (Low to High)</option>
-                                <option value="price-high">Price (High to Low)</option>
-                            </select>
-                        </div>
+                    {/* Sort */}
+                    <div>
+                        <label style={labelStyle}>Sort By</label>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            style={{ ...inputStyle, cursor: 'pointer', appearance: 'none' }}
+                            onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                            onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+                        >
+                            <option value="default">Default Sorting</option>
+                            <option value="name">Name (A–Z)</option>
+                            <option value="price-low">Price (Low to High)</option>
+                            <option value="price-high">Price (High to Low)</option>
+                        </select>
                     </div>
                 </div>
 
-                {/* Results Count */}
-                <div className="mb-6">
-                    <p className="text-slate-600">
-                        Showing <span className="font-semibold text-slate-900">{filteredProducts.length}</span> products
+                {/* Results count */}
+                <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <p className="label-caps" style={{ color: 'var(--outline)' }}>
+                        {filteredProducts.length} {filteredProducts.length === 1 ? 'Product' : 'Products'}
                     </p>
+                    {(searchTerm || selectedCategory !== 'All' || sortBy !== 'default') && (
+                        <button
+                            onClick={() => { setSearchTerm(''); setSelectedCategory('All'); setSortBy('default'); }}
+                            className="label-caps"
+                            style={{
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                color: 'var(--outline)', textDecoration: 'underline', transition: 'color 0.2s',
+                            }}
+                            onMouseOver={e => (e.currentTarget.style.color = 'var(--on-surface)')}
+                            onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
+                        >
+                            Clear Filters
+                        </button>
+                    )}
                 </div>
 
                 {/* Products Grid */}
                 {filteredProducts.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div
+                        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '48px 32px' }}
+                    >
                         {filteredProducts.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl p-16 text-center">
-                        <p className="text-slate-500 text-lg">No products found matching your criteria.</p>
-                        <button
-                            onClick={() => { setSearchTerm(''); setSelectedCategory('All'); setSortBy('default'); }}
-                            className="mt-4 text-amber-500 font-semibold hover:text-amber-600"
-                        >
-                            Clear Filters
-                        </button>
+                    <div style={{ padding: '80px 0', textAlign: 'center' }}>
+                        <p className="font-caslon" style={{ fontSize: '24px', color: 'var(--on-surface)', marginBottom: '16px' }}>
+                            No products found.
+                        </p>
+                        <p style={{ color: 'var(--outline)', fontSize: '15px' }}>
+                            Try adjusting your search or filter criteria.
+                        </p>
                     </div>
                 )}
             </div>

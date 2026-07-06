@@ -23,35 +23,71 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ title, products }) =>
   };
 
   return (
-    <div className="py-12 border-b border-slate-200 last:border-0">
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h3 className="text-2xl font-serif font-bold text-slate-800">{title}</h3>
-          <div className="h-1 w-12 bg-amber-500 mt-2"></div>
-        </div>
-        <div className="flex gap-2">
+    <div style={{ paddingBottom: '64px', marginBottom: '64px', borderBottom: '1px solid var(--outline-variant)' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
+        {title && (
+          <h3
+            className="font-caslon"
+            style={{ fontSize: '24px', fontWeight: 400, color: 'var(--on-surface)', lineHeight: 1.2 }}
+          >
+            {title}
+          </h3>
+        )}
+        <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
           <button
             onClick={() => scroll('left')}
-            className="p-2 border border-slate-200 rounded-full hover:bg-amber-500 hover:border-amber-500 hover:text-white transition-all"
+            style={{
+              width: '40px', height: '40px',
+              border: '1px solid var(--on-surface)',
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--on-surface)',
+              transition: 'background 0.2s, color 0.2s',
+            }}
+            onMouseOver={e => { e.currentTarget.style.background = 'var(--on-surface)'; e.currentTarget.style.color = 'var(--surface-white)'; }}
+            onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--on-surface)'; }}
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} strokeWidth={1.5} />
           </button>
           <button
             onClick={() => scroll('right')}
-            className="p-2 border border-slate-200 rounded-full hover:bg-amber-500 hover:border-amber-500 hover:text-white transition-all"
+            style={{
+              width: '40px', height: '40px',
+              border: '1px solid var(--on-surface)',
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--on-surface)',
+              transition: 'background 0.2s, color 0.2s',
+            }}
+            onMouseOver={e => { e.currentTarget.style.background = 'var(--on-surface)'; e.currentTarget.style.color = 'var(--surface-white)'; }}
+            onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--on-surface)'; }}
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} strokeWidth={1.5} />
           </button>
         </div>
       </div>
 
+      {/* Scrollable product row */}
       <div
         ref={scrollRef}
-        className="flex gap-6 overflow-x-auto snap-x no-scrollbar pb-4"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        style={{
+          display: 'flex',
+          gap: '24px',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          paddingBottom: '4px',
+        }}
       >
         {products.map((product) => (
-          <div key={product.id} className="min-w-[280px] md:min-w-[320px] snap-start">
+          <div key={product.id} style={{ minWidth: '260px', flexShrink: 0 }}>
             <ProductCard product={product} />
           </div>
         ))}

@@ -1,27 +1,44 @@
 import React, { useState } from 'react';
 import { useProducts } from '../contexts/ProductContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Layout, Plus, Trash2, ArrowLeft, Save, Globe, Image as ImageIcon, FileText } from 'lucide-react';
+import { Layout, Plus, Trash2, ArrowLeft, Save, Globe, Image as ImageIcon, FileText, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Category } from '../types';
+
+const adminInput: React.CSSProperties = {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid var(--outline-variant)',
+    background: 'var(--surface-white)',
+    fontSize: '13px',
+    color: 'var(--on-surface)',
+    outline: 'none',
+    fontFamily: 'Inter, sans-serif',
+    transition: 'border-color 0.2s',
+    borderRadius: 0,
+};
+
+const adminLabel: React.CSSProperties = {
+    display: 'block',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '10px',
+    fontWeight: 700,
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    color: 'var(--outline)',
+    marginBottom: '6px',
+};
 
 const AdminCategories: React.FC = () => {
     const { categories, addCategory, deleteCategory, loading } = useProducts();
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [isAdding, setIsAdding] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        image: '',
-        description: ''
-    });
+    const [formData, setFormData] = useState({ name: '', image: '', description: '' });
     const [saving, setSaving] = useState(false);
 
-    // Redirect if not authenticated
     React.useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/admin');
-        }
+        if (!isAuthenticated) navigate('/admin');
     }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -29,200 +46,225 @@ const AdminCategories: React.FC = () => {
         setSaving(true);
         try {
             const slug = formData.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-            const newCategory: Category = {
-                id: slug,
-                name: formData.name,
-                slug: slug,
-                image: formData.image,
-                description: formData.description
-            };
-            await addCategory(newCategory);
+            await addCategory({ id: slug, name: formData.name, slug, image: formData.image, description: formData.description } as Category);
             setIsAdding(false);
             setFormData({ name: '', image: '', description: '' });
-        } catch (error) {
-            alert('Failed to add category');
-        } finally {
-            setSaving(false);
-        }
+        } catch { alert('Failed to add category'); } finally { setSaving(false); }
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+            <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background-color 0.4s ease' }}>
+                <div style={{ width: '32px', height: '32px', border: '2px solid var(--on-surface)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                    <div>
-                        <Link to="/admin" className="text-amber-600 font-bold flex items-center gap-2 mb-4 hover:gap-3 transition-all">
-                            <ArrowLeft size={20} /> Back to Dashboard
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
+            {/* Admin Header */}
+            <div style={{ backgroundColor: '#1a1c1c', padding: '32px 64px' }} className="px-6 md:px-16">
+                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                        <Link to="/admin" style={{
+                            display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none',
+                            fontFamily: 'Inter', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em',
+                            textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s',
+                        }}
+                            onMouseOver={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
+                            onMouseOut={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
+                        >
+                            <ArrowLeft size={12} /> Dashboard
                         </Link>
-                        <h1 className="text-4xl font-serif font-bold text-slate-900 mb-2">Manage Categories</h1>
-                        <p className="text-slate-500">Create and organize your product collections</p>
+                        <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '12px' }}>/</span>
+                        <span style={{ fontFamily: 'Inter', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>
+                            Categories
+                        </span>
                     </div>
-                    <button
-                        onClick={() => setIsAdding(true)}
-                        className="bg-amber-500 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 hover:shadow-xl hover:-translate-y-1"
-                    >
-                        <Plus size={24} /> Create New Category
-                    </button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+                        <div>
+                            <h1 className="font-caslon" style={{ fontSize: '32px', fontWeight: 400, color: '#ffffff' }}>
+                                Manage Categories
+                            </h1>
+                            <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginTop: '6px' }}>
+                                {categories.length} collections
+                            </p>
+                        </div>
+                        <button onClick={() => setIsAdding(true)} style={{
+                            backgroundColor: '#ffffff', color: '#1a1c1c', border: '1px solid #ffffff',
+                            padding: '10px 24px', fontFamily: 'Inter', fontSize: '11px', fontWeight: 700,
+                            letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s',
+                        }}
+                            onMouseOver={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#ffffff'; }}
+                            onMouseOut={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#1a1c1c'; }}
+                        >
+                            <Plus size={13} /> New Category
+                        </button>
+                    </div>
                 </div>
+            </div>
 
-                {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {categories.map((category) => (
-                        <div key={category.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 group">
-                            <div className="relative h-48 bg-slate-200">
-                                {category.image ? (
-                                    <img src={category.image} alt={category.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                        <Layout size={48} />
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <button
-                                    onClick={() => {
-                                        if (window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
-                                            deleteCategory(category.id);
-                                        }
+            {/* Category Grid */}
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 64px 120px' }} className="px-6 md:px-16">
+                {categories.length === 0 ? (
+                    <div style={{ border: '1px dashed var(--outline-variant)', padding: '80px', textAlign: 'center' }}>
+                        <Layout size={32} style={{ margin: '0 auto 16px', color: 'var(--outline-variant)' }} />
+                        <h3 className="font-caslon" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--on-surface)', marginBottom: '8px' }}>
+                            No Categories Yet
+                        </h3>
+                        <p style={{ fontSize: '14px', color: 'var(--outline)' }}>Create your first product category above.</p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px' }} className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                        {categories.map(category => (
+                            <div key={category.id} style={{ border: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-white)', position: 'relative', overflow: 'hidden' }}>
+                                {/* Image */}
+                                <div style={{ height: '180px', backgroundColor: 'var(--outline-variant)', overflow: 'hidden', position: 'relative' }}>
+                                    {category.image ? (
+                                        <img src={category.image} alt={category.name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }}
+                                            onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.04)')}
+                                            onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
+                                        />
+                                    ) : (
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                            <Layout size={40} color="var(--outline-variant)" />
+                                        </div>
+                                    )}
+                                    {/* Delete button on image */}
+                                    <button onClick={() => {
+                                        if (window.confirm(`Delete "${category.name}"? This cannot be undone.`)) deleteCategory(category.id);
+                                    }} style={{
+                                        position: 'absolute', top: '12px', right: '12px',
+                                        width: '32px', height: '32px', backgroundColor: 'var(--surface-white)',
+                                        border: '1px solid var(--outline-variant)', cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        color: 'var(--outline)', transition: 'all 0.2s', opacity: 0,
                                     }}
-                                    className="absolute top-4 right-4 bg-red-500 text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-lg translate-y-2 group-hover:translate-y-0"
-                                >
-                                    <Trash2 size={20} />
-                                </button>
-                            </div>
-                            <div className="p-8">
-                                <div className="flex items-center gap-2 text-amber-600 text-xs font-bold uppercase tracking-widest mb-3">
-                                    <Globe size={14} /> slug: {category.slug}
-                                </div>
-                                <h3 className="text-2xl font-bold text-slate-900 mb-4">{category.name}</h3>
-                                <p className="text-slate-500 text-sm line-clamp-2 mb-6">
-                                    {category.description || 'No description provided for this category.'}
-                                </p>
-                                <div className="pt-6 border-t border-slate-50 flex items-center justify-between text-slate-400 text-xs font-medium">
-                                    <span>Added on {new Date().toLocaleDateString()}</span>
-                                    <div className="flex items-center gap-1">
-                                        <Layout size={14} /> View Details
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Add Modal */}
-                {isAdding && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsAdding(false)} />
-                        <div className="relative bg-white w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-                            <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-6 md:p-10 text-white shrink-0 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16" />
-                                <div className="flex justify-between items-start mb-4 relative z-10">
-                                    <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-xl">
-                                        <Plus size={24} />
-                                    </div>
-                                    <button onClick={() => setIsAdding(false)} className="hover:bg-white/20 p-2 rounded-full transition-colors">
-                                        <X size={20} />
-                                    </button>
-                                </div>
-                                <h2 className="text-2xl md:text-3xl font-serif font-bold relative z-10">New Collection</h2>
-                                <p className="text-amber-100 mt-1 md:mt-2 text-sm md:text-base relative z-10">Define a new product category for your catalog</p>
-                            </div>
-
-                            <div className="overflow-y-auto p-6 md:p-10 custom-scrollbar">
-                                <form onSubmit={handleSubmit}>
-                                <div className="space-y-8">
-                                    {/* Name */}
-                                    <div className="group">
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 group-focus-within:text-amber-500 transition-colors">Category Name</label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-amber-500 transition-colors">
-                                                <Layout size={20} />
-                                            </div>
-                                            <input
-                                                type="text"
-                                                required
-                                                value={formData.name}
-                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                placeholder="e.g. Modern Hardware"
-                                                className="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all text-slate-700 font-medium"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Image URL */}
-                                    <div className="group">
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 group-focus-within:text-amber-500 transition-colors">Cover Image URL</label>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-amber-500 transition-colors">
-                                                <ImageIcon size={20} />
-                                            </div>
-                                            <input
-                                                type="url"
-                                                value={formData.image}
-                                                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                                placeholder="https://images.unsplash.com/..."
-                                                className="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all text-slate-700 font-medium"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Description */}
-                                    <div className="group">
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 group-focus-within:text-amber-500 transition-colors">Description</label>
-                                        <div className="relative">
-                                            <div className="absolute top-4 left-4 pointer-events-none text-slate-300 group-focus-within:text-amber-500 transition-colors">
-                                                <FileText size={20} />
-                                            </div>
-                                            <textarea
-                                                value={formData.description}
-                                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                                rows={4}
-                                                placeholder="Write a brief description of what this category includes..."
-                                                className="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all text-slate-700 font-medium resize-none"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-4 mt-12">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsAdding(false)}
-                                        className="flex-1 px-8 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all"
+                                        onMouseOver={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.borderColor = 'var(--error)'; e.currentTarget.style.color = 'var(--error)'; }}
+                                        onMouseOut={e => { e.currentTarget.style.opacity = '0'; e.currentTarget.style.borderColor = 'var(--outline-variant)'; e.currentTarget.style.color = 'var(--outline)'; }}
+                                        className="category-delete-btn"
                                     >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={saving}
-                                        className="flex-2 px-12 py-4 bg-amber-500 text-white rounded-2xl font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                    >
-                                        {saving ? 'Creating...' : <><Save size={20} /> Create Category</>}
+                                        <Trash2 size={13} />
                                     </button>
                                 </div>
-                                </form>
+
+                                {/* Info */}
+                                <div style={{ padding: '20px 24px' }}>
+                                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '6px' }}>
+                                        slug: {category.slug}
+                                    </p>
+                                    <h3 style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 700, color: 'var(--on-surface)', marginBottom: '8px' }}>
+                                        {category.name}
+                                    </h3>
+                                    {category.description && (
+                                        <p style={{ fontFamily: 'Inter', fontSize: '13px', color: 'var(--outline)', lineHeight: '20px',
+                                            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                            {category.description}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
                 )}
             </div>
+
+            {/* ═══ Add Category Modal ════════════════════════════════════════════════ */}
+            {isAdding && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(26,28,28,0.7)' }} onClick={() => setIsAdding(false)} />
+                    <div style={{
+                        position: 'relative', backgroundColor: 'var(--surface-white)', width: '100%', maxWidth: '520px',
+                        border: '1px solid var(--outline-variant)',
+                    }}>
+                        {/* Modal Header */}
+                        <div style={{ backgroundColor: '#1a1c1c', padding: '20px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <p className="label-caps" style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>New Collection</p>
+                                <h3 className="font-caslon" style={{ fontSize: '22px', fontWeight: 400, color: '#ffffff' }}>
+                                    Add Category
+                                </h3>
+                            </div>
+                            <button onClick={() => setIsAdding(false)} style={{
+                                width: '32px', height: '32px', border: '1px solid rgba(255,255,255,0.2)',
+                                background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color: 'rgba(255,255,255,0.6)',
+                            }}>
+                                <X size={14} />
+                            </button>
+                        </div>
+
+                        {/* Form */}
+                        <form onSubmit={handleSubmit}>
+                            <div style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div>
+                                    <label style={adminLabel}>Category Name</label>
+                                    <input type="text" required value={formData.name}
+                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        placeholder="e.g. Italian Marble"
+                                        style={adminInput}
+                                        onFocus={e => (e.target.style.borderColor = 'var(--on-surface)')}
+                                        onBlur={e => (e.target.style.borderColor = 'var(--outline-variant)')}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={adminLabel}>Cover Image URL</label>
+                                    <input type="url" value={formData.image}
+                                        onChange={e => setFormData({ ...formData, image: e.target.value })}
+                                        placeholder="https://images.unsplash.com/…"
+                                        style={adminInput}
+                                        onFocus={e => (e.target.style.borderColor = 'var(--on-surface)')}
+                                        onBlur={e => (e.target.style.borderColor = 'var(--outline-variant)')}
+                                    />
+                                    {formData.image && (
+                                        <div style={{ marginTop: '8px', height: '100px', overflow: 'hidden', border: '1px solid var(--outline-variant)' }}>
+                                            <img src={formData.image} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <label style={adminLabel}>Description</label>
+                                    <textarea value={formData.description}
+                                        onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                        rows={3} placeholder="Brief description of this category…"
+                                        style={{ ...adminInput, resize: 'vertical', lineHeight: '22px' }}
+                                        onFocus={e => (e.target.style.borderColor = 'var(--on-surface)')}
+                                        onBlur={e => (e.target.style.borderColor = 'var(--outline-variant)')}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ padding: '20px 28px', borderTop: '1px solid var(--outline-variant)', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                <button type="button" onClick={() => setIsAdding(false)} style={{
+                                    border: '1px solid var(--outline-variant)', background: 'none', padding: '10px 20px',
+                                    fontFamily: 'Inter', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em',
+                                    textTransform: 'uppercase', color: 'var(--outline)', cursor: 'pointer',
+                                }}>
+                                    Cancel
+                                </button>
+                                <button type="submit" disabled={saving} style={{
+                                    backgroundColor: 'var(--on-surface)', color: 'var(--surface-white)', border: '1px solid var(--on-surface)',
+                                    padding: '10px 24px', fontFamily: 'Inter', fontSize: '11px', fontWeight: 700,
+                                    letterSpacing: '0.1em', textTransform: 'uppercase', cursor: saving ? 'not-allowed' : 'pointer',
+                                    opacity: saving ? 0.6 : 1, display: 'flex', alignItems: 'center', gap: '6px',
+                                }}>
+                                    <Save size={13} />
+                                    {saving ? 'Creating…' : 'Create Category'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            <style>{`
+                .category-card:hover .category-delete-btn { opacity: 1 !important; }
+            `}</style>
         </div>
     );
 };
-
-const X: React.FC<{ size?: number }> = ({ size = 24 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-);
 
 export default AdminCategories;

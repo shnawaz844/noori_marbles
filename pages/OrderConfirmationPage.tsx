@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle, Package, Home, Download } from 'lucide-react';
+import { CheckCircle, Package, Home } from 'lucide-react';
 
 const OrderConfirmationPage: React.FC = () => {
     const orderId = sessionStorage.getItem('orderId') || 'N/A';
@@ -10,116 +10,129 @@ const OrderConfirmationPage: React.FC = () => {
     const customerInfo = JSON.parse(sessionStorage.getItem('customerInfo') || '{}');
 
     useEffect(() => {
-        // Clear session storage after showing confirmation
-        return () => {
-            // Don't clear immediately, wait for user to navigate away
-        };
+        return () => {};
     }, []);
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Success Message */}
-                <div className="bg-white rounded-2xl shadow-sm p-12 text-center mb-8">
-                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle size={48} className="text-green-600" />
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
+            {/* Page header */}
+            <div style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '64px 80px 48px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
+                className="px-6 md:px-[80px]">
+                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                        <CheckCircle size={24} color="var(--on-surface)" strokeWidth={1.5} />
+                        <p className="label-caps" style={{ color: 'var(--outline)' }}>Order Confirmed</p>
                     </div>
-
-                    <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">
-                        Order Placed Successfully!
+                    <h1 className="font-caslon" style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'var(--on-surface)' }}>
+                        Thank You for Your Order.
                     </h1>
-                    <p className="text-slate-600 text-lg mb-8">
-                        Thank you for your order. We'll send you a confirmation email shortly.
+                    <p style={{ color: 'var(--outline)', fontSize: '15px', marginTop: '12px' }}>
+                        We've received your order and will be in touch shortly.
                     </p>
+                </div>
+            </div>
 
-                    <div className="bg-amber-50 rounded-xl p-6 inline-block">
-                        <div className="text-sm text-slate-600 mb-2">Order Number</div>
-                        <div className="text-3xl font-bold text-amber-600">{orderId}</div>
+            <div style={{ maxWidth: '800px', margin: '0 auto', padding: '64px 80px 120px' }}
+                className="px-6 md:px-[80px]">
+
+                {/* Order number */}
+                <div style={{ border: '1px solid var(--outline-variant)', padding: '32px', marginBottom: '48px', backgroundColor: 'var(--surface-white)' }}>
+                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '8px' }}>Order Number</p>
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '24px', fontWeight: 700, color: 'var(--on-surface)', letterSpacing: '0.05em' }}>
+                        {orderId}
+                    </p>
+                </div>
+
+                {/* Order details grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '48px' }}
+                    className="grid-cols-1 sm:grid-cols-2">
+                    <div style={{ border: '1px solid var(--outline-variant)', padding: '24px', backgroundColor: 'var(--surface-white)' }}>
+                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '8px' }}>Order Amount</p>
+                        <p style={{ fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
+                            ₹{parseFloat(total).toLocaleString('en-IN')}
+                        </p>
+                    </div>
+                    <div style={{ border: '1px solid var(--outline-variant)', padding: '24px', backgroundColor: 'var(--surface-white)' }}>
+                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '8px' }}>Payment Method</p>
+                        <p style={{ fontSize: '16px', fontWeight: 500, color: 'var(--on-surface)' }}>{paymentMethod}</p>
+                    </div>
+                    <div style={{ border: '1px solid var(--outline-variant)', padding: '24px', gridColumn: '1 / -1', backgroundColor: 'var(--surface-white)' }}>
+                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '12px' }}>Delivery Address</p>
+                        <p style={{ fontSize: '15px', color: 'var(--on-surface)', fontWeight: 500 }}>{customerInfo.name}</p>
+                        <p style={{ fontSize: '14px', color: 'var(--on-surface-variant)', lineHeight: '22px' }}>
+                            {customerInfo.address}<br />
+                            {customerInfo.city}, {customerInfo.state} — {customerInfo.pincode}<br />
+                            {customerInfo.phone} · {customerInfo.email}
+                        </p>
                     </div>
                 </div>
 
-                {/* Order Details */}
-                <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-                    <h2 className="text-2xl font-serif font-bold text-slate-900 mb-6">Order Details</h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <div className="text-sm text-slate-500 mb-1">Order Amount</div>
-                            <div className="text-2xl font-bold text-slate-900">₹{parseFloat(total).toLocaleString('en-IN')}</div>
-                        </div>
-                        <div>
-                            <div className="text-sm text-slate-500 mb-1">Payment Method</div>
-                            <div className="text-lg font-semibold text-slate-900">{paymentMethod}</div>
-                        </div>
-                        <div className="md:col-span-2">
-                            <div className="text-sm text-slate-500 mb-2">Delivery Address</div>
-                            <div className="text-slate-900">
-                                <p className="font-semibold">{customerInfo.name}</p>
-                                <p>{customerInfo.address}</p>
-                                <p>{customerInfo.city}, {customerInfo.state} - {customerInfo.pincode}</p>
-                                <p>{customerInfo.phone}</p>
-                                <p>{customerInfo.email}</p>
+                {/* What's next */}
+                <div style={{ marginBottom: '48px' }}>
+                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '24px' }}>What's Next</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                        {[
+                            { icon: <CheckCircle size={16} strokeWidth={1.5} />, title: 'Order Confirmed', desc: "We've received your order and will process it shortly.", active: true },
+                            { icon: <Package size={16} strokeWidth={1.5} />, title: 'Preparing for Dispatch', desc: 'Your order will be carefully packed and prepared.', active: false },
+                            { icon: <Home size={16} strokeWidth={1.5} />, title: 'Out for Delivery', desc: 'Estimated delivery: 5–7 business days.', active: false },
+                        ].map((step, idx, arr) => (
+                            <div key={step.title}
+                                style={{
+                                    display: 'flex', gap: '20px', padding: '24px 0',
+                                    borderBottom: idx < arr.length - 1 ? '1px solid var(--outline-variant)' : 'none',
+                                }}>
+                                <div style={{ color: step.active ? 'var(--on-surface)' : 'var(--outline-variant)', flexShrink: 0, paddingTop: '2px' }}>
+                                    {step.icon}
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '15px', fontWeight: 600, color: step.active ? 'var(--on-surface)' : 'var(--outline)', marginBottom: '4px' }}>
+                                        {step.title}
+                                    </p>
+                                    <p style={{ fontSize: '13px', color: 'var(--outline)', lineHeight: '20px' }}>{step.desc}</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Timeline */}
-                <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-                    <h2 className="text-2xl font-serif font-bold text-slate-900 mb-6">What's Next?</h2>
-
-                    <div className="space-y-6">
-                        <div className="flex gap-4">
-                            <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                <CheckCircle size={24} className="text-white" />
-                            </div>
-                            <div>
-                                <div className="font-bold text-slate-900 mb-1">Order Confirmed</div>
-                                <div className="text-sm text-slate-600">We've received your order and will process it shortly.</div>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-4">
-                            <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Package size={24} className="text-slate-600" />
-                            </div>
-                            <div>
-                                <div className="font-bold text-slate-900 mb-1">Preparing for Dispatch</div>
-                                <div className="text-sm text-slate-600">Your order will be prepared and packed carefully.</div>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-4">
-                            <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Home size={24} className="text-slate-600" />
-                            </div>
-                            <div>
-                                <div className="font-bold text-slate-900 mb-1">Out for Delivery</div>
-                                <div className="text-sm text-slate-600">Estimated delivery: 5-7 business days.</div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
                 {/* Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button className="flex items-center justify-center gap-2 bg-slate-900 text-white py-4 rounded-lg font-semibold hover:bg-slate-800 transition-colors">
-                        <Download size={20} />
-                        Download Invoice
-                    </button>
+                <div style={{ display: 'flex', gap: '16px' }} className="flex-col sm:flex-row">
+                    <Link
+                        to="/my-orders"
+                        style={{
+                            flex: 1, display: 'block', border: '1px solid var(--on-surface)',
+                            backgroundColor: 'var(--on-surface)', color: 'var(--surface-white)', padding: '16px',
+                            textAlign: 'center', textDecoration: 'none', fontFamily: 'Inter, sans-serif',
+                            fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+                            transition: 'background 0.2s, color 0.2s',
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--on-surface)'; }}
+                        onMouseOut={e => { e.currentTarget.style.background = 'var(--on-surface)'; e.currentTarget.style.color = 'var(--surface-white)'; }}
+                    >
+                        View My Orders
+                    </Link>
                     <Link
                         to="/"
-                        className="flex items-center justify-center gap-2 bg-amber-500 text-white py-4 rounded-lg font-semibold hover:bg-amber-600 transition-colors"
+                        style={{
+                            flex: 1, display: 'block', border: '1px solid var(--outline-variant)',
+                            padding: '16px', textAlign: 'center', textDecoration: 'none',
+                            fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: 600,
+                            letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--outline)',
+                            transition: 'border-color 0.2s, color 0.2s',
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--on-surface)'; e.currentTarget.style.color = 'var(--on-surface)'; }}
+                        onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--outline-variant)'; e.currentTarget.style.color = 'var(--outline)'; }}
                     >
                         Continue Shopping
                     </Link>
                 </div>
 
-                {/* Contact Info */}
-                <div className="mt-8 text-center text-slate-600 text-sm">
-                    <p>Need help with your order?</p>
-                    <p className="font-semibold text-amber-600">Call us at +91 98765 43210</p>
-                </div>
+                <p style={{ textAlign: 'center', marginTop: '40px', fontSize: '13px', color: 'var(--outline)' }}>
+                    Need help?{' '}
+                    <a href="tel:+919876543210" style={{ color: 'var(--on-surface)', fontWeight: 600 }}>
+                        Call +91 98765 43210
+                    </a>
+                </p>
             </div>
         </div>
     );

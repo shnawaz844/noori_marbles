@@ -1,14 +1,38 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '12px 0',
+  border: 'none',
+  borderBottom: '1px solid var(--outline-variant)',
+  background: 'transparent',
+  fontSize: '15px',
+  color: 'var(--on-surface)',
+  outline: 'none',
+  fontFamily: 'Inter, sans-serif',
+  transition: 'border-color 0.2s',
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontFamily: 'Inter, sans-serif',
+  fontSize: '10px',
+  fontWeight: 600,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase' as const,
+  color: 'var(--outline)',
+  marginBottom: '8px',
+};
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
@@ -19,21 +43,14 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;
-
       if (data.user) {
-        // Fetch role to determine redirect
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', data.user.id)
           .single();
-
         if (profile?.role === 'admin') {
           navigate('/admin', { replace: true });
         } else {
@@ -48,78 +65,154 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center bg-slate-50">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="px-8 pt-10 pb-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2">Welcome Back</h2>
-            <p className="text-slate-500">Sign in to access your account</p>
-          </div>
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--surface)',
+        display: 'flex',
+        paddingTop: '64px',
+        transition: 'background-color 0.4s ease',
+      }}
+    >
+      {/* Left — visual panel */}
+      <div
+        className="hidden lg:block lg:h-screen"
+        style={{
+          width: '50%',
+          position: 'relative',
+          overflow: 'hidden',
+          flexShrink: 0,
+        }}
+      >
+        <img
+          src="https://images.unsplash.com/photo-1655582484145-99ff2bdbcf19?auto=format&fit=crop&q=60&w=1200"
+          alt="Premium marble interior"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(10,10,10,0.3)' }} />
+        <div style={{ position: 'absolute', bottom: '60px', left: '60px' }}>
+          <p className="font-caslon" style={{ fontSize: '32px', color: '#ffffff', lineHeight: 1.2 }}>
+            Crafting Spaces<br />of Distinction.
+          </p>
+        </div>
+      </div>
+
+      {/* Right — Form */}
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '60px 80px',
+        }}
+        className="px-6 md:px-[80px]"
+      >
+        <div style={{ width: '100%', maxWidth: '400px' }}>
+          <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>
+            Account Access
+          </p>
+          <h1
+            className="font-caslon"
+            style={{ fontSize: '40px', fontWeight: 400, color: 'var(--on-surface)', marginBottom: '48px' }}
+          >
+            Welcome Back.
+          </h1>
 
           {error && (
-            <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-6 text-sm border border-red-100">
+            <div
+              style={{
+                backgroundColor: '#ffdad6',
+                border: '1px solid #ba1a1a',
+                color: '#93000a',
+                padding: '12px 16px',
+                fontSize: '13px',
+                marginBottom: '32px',
+                fontFamily: 'Inter, sans-serif',
+              }}
+            >
               {error}
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                  placeholder="you@example.com"
-                />
-              </div>
+              <label style={labelStyle}>Email Address</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                style={inputStyle}
+                onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+              />
             </div>
 
             <div>
-              <div className="flex justify-between mb-2">
-                <label className="block text-sm font-medium text-slate-700">Password</label>
-                <a href="#" className="text-sm text-amber-500 hover:text-amber-600 font-medium">Forgot password?</a>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ ...labelStyle, marginBottom: 0 }}>Password</label>
+                <a href="#" className="label-caps" style={{ color: 'var(--outline)', textDecoration: 'underline', fontSize: '10px' }}>
+                  Forgot?
+                </a>
               </div>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
-                </div>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                  placeholder="••••••••"
-                />
-              </div>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={inputStyle}
+                onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+              />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-slate-900 text-white py-3 px-4 rounded-lg font-medium hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+              style={{
+                width: '100%',
+                backgroundColor: loading ? 'var(--outline-variant)' : 'var(--on-surface)',
+                color: loading ? 'var(--outline)' : 'var(--surface-white)',
+                border: '1px solid var(--on-surface)',
+                padding: '16px',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'background 0.25s, color 0.25s',
+              }}
+              onMouseOver={e => {
+                if (!loading) {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--on-surface)';
+                }
+              }}
+              onMouseOut={e => {
+                if (!loading) {
+                  e.currentTarget.style.background = 'var(--on-surface)';
+                  e.currentTarget.style.color = 'var(--surface-white)';
+                }
+              }}
             >
-              {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  Sign In <ArrowRight className="h-5 w-5" />
-                </>
-              )}
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <>Sign In <ArrowRight size={14} /></>}
             </button>
           </form>
-        </div>
 
-        <div className="bg-slate-50 px-8 py-6 text-center border-t border-slate-100">
-          <p className="text-sm text-slate-600">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-amber-500 hover:text-amber-600 font-semibold">
+          <p style={{ marginTop: '32px', fontSize: '13px', color: 'var(--outline)', fontFamily: 'Inter, sans-serif' }}>
+            No account yet?{' '}
+            <Link
+              to="/signup"
+              style={{ color: 'var(--on-surface)', textDecoration: 'underline', fontWeight: 600 }}
+            >
               Sign up
             </Link>
           </p>

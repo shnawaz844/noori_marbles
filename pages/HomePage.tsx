@@ -10,21 +10,35 @@ const HomePage: React.FC = () => {
     const { products } = useProducts();
 
     return (
-        <div className="min-h-screen">
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', transition: 'background-color 0.4s ease' }}>
             <main>
                 <Hero />
                 <CategoriesGrid />
 
-                {/* Product Showcase */}
-                <section id="products" className="py-24 bg-slate-50">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="mb-12">
-                            <span className="text-amber-500 font-bold uppercase tracking-widest text-sm">Product Catalog</span>
-                            <h2 className="text-4xl font-serif font-bold text-slate-900 mt-2">Curated Premium Selection</h2>
-                        </div>
+                {/* Product Catalog Section */}
+                {products.length > 0 && (
+                    <section
+                        id="products"
+                        style={{ backgroundColor: 'var(--surface)', padding: '120px 80px', transition: 'background-color 0.4s ease' }}
+                        className="px-6 md:px-[80px]"
+                    >
+                        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                            {/* Section header */}
+                            <div style={{ marginBottom: '64px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '32px', flexWrap: 'wrap' }}>
+                                <div>
+                                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>
+                                        Product Catalog
+                                    </p>
+                                    <h2
+                                        className="font-caslon"
+                                        style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 400, color: 'var(--on-surface)', lineHeight: 1.2 }}
+                                    >
+                                        Curated Premium Selection.
+                                    </h2>
+                                </div>
+                            </div>
 
-                        {products.length > 0 ? (
-                            Object.entries(
+                            {Object.entries(
                                 products.reduce((acc, product) => {
                                     if (!acc[product.category]) acc[product.category] = [];
                                     acc[product.category].push(product);
@@ -36,14 +50,10 @@ const HomePage: React.FC = () => {
                                     title={category}
                                     products={catProducts}
                                 />
-                            ))
-                        ) : (
-                            <div className="text-center py-12 text-slate-500">
-                                No products available in the catalog yet.
-                            </div>
-                        )}
-                    </div>
-                </section>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 <AboutSection />
                 <ContactSection />

@@ -22,68 +22,146 @@ const MyOrdersPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 pt-32 flex justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+            <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9', paddingTop: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '32px', height: '32px', border: '1px solid #1a1c1c', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
             </div>
         );
     }
 
     if (orders.length === 0) {
         return (
-            <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-                <div className="max-w-4xl mx-auto px-4 text-center">
-                    <div className="bg-white rounded-2xl p-16 shadow-sm">
-                        <Package size={64} className="mx-auto text-slate-300 mb-6" />
-                        <h2 className="text-3xl font-serif font-bold text-slate-900 mb-4">No Orders Yet</h2>
-                        <p className="text-slate-500 mb-8">You haven't placed any orders with us yet.</p>
-                        <Link to="/products" className="bg-amber-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-amber-600 transition-colors">
-                            Start Shopping
-                        </Link>
-                    </div>
+            <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9', paddingTop: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ textAlign: 'center', padding: '80px 24px' }}>
+                    <Package size={48} strokeWidth={1} color="#c4c7c7" style={{ margin: '0 auto 32px' }} />
+                    <h2 className="font-caslon" style={{ fontSize: '40px', fontWeight: 400, color: '#1a1c1c', marginBottom: '16px' }}>
+                        No Orders Yet
+                    </h2>
+                    <p style={{ color: '#747878', fontSize: '15px', marginBottom: '40px' }}>
+                        You haven't placed any orders with us yet.
+                    </p>
+                    <Link
+                        to="/products"
+                        style={{
+                            display: 'inline-block',
+                            backgroundColor: '#1a1c1c',
+                            color: '#ffffff',
+                            padding: '14px 40px',
+                            textDecoration: 'none',
+                            fontFamily: 'Inter, sans-serif',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            letterSpacing: '0.12em',
+                            textTransform: 'uppercase',
+                            border: '1px solid #1a1c1c',
+                            transition: 'background 0.2s, color 0.2s',
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#1a1c1c'; }}
+                        onMouseOut={e => { e.currentTarget.style.background = '#1a1c1c'; e.currentTarget.style.color = '#ffffff'; }}
+                    >
+                        Start Shopping
+                    </Link>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl font-serif font-bold text-slate-900 mb-8">My Orders</h1>
-                
-                <div className="space-y-6">
-                    {orders.map(order => (
-                        <div key={order.id} className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 overflow-hidden relative">
-                            <div className="flex flex-col md:flex-row justify-between mb-6 border-b border-slate-100 pb-6 gap-4">
+        <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9', paddingTop: '64px' }}>
+            {/* Page header */}
+            <div
+                style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e2e2e2', padding: '64px 80px 48px' }}
+                className="px-6 md:px-[80px]"
+            >
+                <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                    <p className="label-caps" style={{ color: '#747878', marginBottom: '16px' }}>Account</p>
+                    <h1 className="font-caslon" style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: '#1a1c1c' }}>
+                        My Orders
+                    </h1>
+                </div>
+            </div>
+
+            <div
+                style={{ maxWidth: '1000px', margin: '0 auto', padding: '64px 80px 120px' }}
+                className="px-6 md:px-[80px]"
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                    {orders.map((order, idx) => (
+                        <div
+                            key={order.id}
+                            style={{
+                                borderBottom: '1px solid #e2e2e2',
+                                padding: '48px 0',
+                            }}
+                        >
+                            {/* Order header */}
+                            <div
+                                style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px', paddingBottom: '24px', borderBottom: '1px solid #e2e2e2' }}
+                                className="grid-cols-2 md:grid-cols-4"
+                            >
                                 <div>
-                                    <div className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Order ID</div>
-                                    <div className="font-mono text-lg font-bold text-slate-900">{order.order_id}</div>
+                                    <p className="label-caps" style={{ color: '#747878', marginBottom: '8px' }}>Order ID</p>
+                                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#1a1c1c', letterSpacing: '0.05em' }}>
+                                        {order.order_id}
+                                    </p>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Date</div>
-                                    <div className="text-slate-900">{new Date(order.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
+                                    <p className="label-caps" style={{ color: '#747878', marginBottom: '8px' }}>Date</p>
+                                    <p style={{ fontSize: '14px', color: '#1a1c1c' }}>
+                                        {new Date(order.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                    </p>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Total</div>
-                                    <div className="font-bold text-amber-600 text-lg">₹{parseFloat(order.total).toLocaleString('en-IN')}</div>
+                                    <p className="label-caps" style={{ color: '#747878', marginBottom: '8px' }}>Total</p>
+                                    <p style={{ fontSize: '16px', fontWeight: 600, color: '#1a1c1c' }}>
+                                        ₹{parseFloat(order.total).toLocaleString('en-IN')}
+                                    </p>
                                 </div>
                                 <div>
-                                    <div className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Status</div>
-                                    <div className="flex items-center gap-2">
-                                        {order.status === 'Pending' ? <Clock size={16} className="text-amber-500" /> : <CheckCircle size={16} className="text-green-500" />}
-                                        <span className={`font-semibold ${order.status === 'Pending' ? 'text-amber-600' : 'text-green-600'}`}>{order.status}</span>
+                                    <p className="label-caps" style={{ color: '#747878', marginBottom: '8px' }}>Status</p>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        {order.status === 'Pending'
+                                            ? <Clock size={13} color="#747878" />
+                                            : <CheckCircle size={13} color="#1a1c1c" />
+                                        }
+                                        <span
+                                            className="label-caps"
+                                            style={{ color: order.status === 'Pending' ? '#747878' : '#1a1c1c' }}
+                                        >
+                                            {order.status}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div className="space-y-4">
+
+                            {/* Order items */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
                                 {order.items.map((item: any, i: number) => (
-                                    <div key={i} className="flex items-center gap-4">
-                                        <img src={item.product.image} alt={item.product.name} className="w-16 h-16 object-cover rounded-lg" />
-                                        <div className="flex-1">
-                                            <div className="font-bold text-slate-900">{item.product.name}</div>
-                                            <div className="text-sm text-slate-500">Qty: {item.quantity}</div>
+                                    <div
+                                        key={i}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '20px',
+                                            padding: '16px 0',
+                                            borderBottom: i < order.items.length - 1 ? '1px solid #f3f3f3' : 'none',
+                                        }}
+                                    >
+                                        <img
+                                            src={item.product.image}
+                                            alt={item.product.name}
+                                            style={{ width: '64px', height: '64px', objectFit: 'cover', display: 'block', flexShrink: 0 }}
+                                        />
+                                        <div style={{ flex: 1 }}>
+                                            <p style={{ fontSize: '14px', fontWeight: 500, color: '#1a1c1c', marginBottom: '4px' }}>
+                                                {item.product.name}
+                                            </p>
+                                            <p className="label-caps" style={{ color: '#747878' }}>
+                                                Qty: {item.quantity}
+                                            </p>
                                         </div>
-                                        <div className="font-semibold text-slate-900">₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</div>
+                                        <p style={{ fontSize: '14px', fontWeight: 600, color: '#1a1c1c' }}>
+                                            ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
+                                        </p>
                                     </div>
                                 ))}
                             </div>

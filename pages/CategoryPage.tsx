@@ -9,42 +9,72 @@ const CategoryPage: React.FC = () => {
     const { products } = useProducts();
     const { categoryName } = useParams<{ categoryName: string }>();
     const decodedCategory = categoryName ? decodeURIComponent(categoryName) : '';
-
     const productsInCategory = products.filter(p => p.category === decodedCategory);
 
     return (
-        <div className="min-h-screen bg-slate-50 pt-32 pb-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Back Button */}
-                <Link
-                    to="/"
-                    className="inline-flex items-center gap-2 text-slate-600 hover:text-amber-500 mb-6 transition-colors"
-                >
-                    <ArrowLeft size={20} />
-                    Back to Home
-                </Link>
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
+            {/* Page header */}
+            <div
+                style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '20px 80px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
+                className="px-6 md:px-[80px]"
+            >
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <Link
+                        to="/products"
+                        style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '8px',
+                            textDecoration: 'none', fontFamily: 'Inter, sans-serif',
+                            fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em',
+                            textTransform: 'uppercase', color: 'var(--outline)', transition: 'color 0.2s',
+                        }}
+                        onMouseOver={e => (e.currentTarget.style.color = 'var(--on-surface)')}
+                        onMouseOut={e => (e.currentTarget.style.color = 'var(--outline)')}
+                    >
+                        <ArrowLeft size={14} strokeWidth={1.5} /> All Products
+                    </Link>
+                </div>
+            </div>
 
-                {/* Header */}
-                <div className="mb-12">
-                    <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-4">
+            <div
+                style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '48px 80px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
+                className="px-6 md:px-[80px]"
+            >
+                <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>
+                        Category
+                    </p>
+                    <h1
+                        className="font-caslon"
+                        style={{ fontSize: 'clamp(32px, 4vw, 56px)', fontWeight: 400, color: 'var(--on-surface)', lineHeight: 1.1 }}
+                    >
                         {decodedCategory}
                     </h1>
-                    <p className="text-slate-500 text-lg">
-                        Explore our premium collection of {decodedCategory.toLowerCase()} for your interior projects
+                    <p style={{ color: 'var(--outline)', fontSize: '15px', marginTop: '12px' }}>
+                        {productsInCategory.length} {productsInCategory.length === 1 ? 'product' : 'products'} available
                     </p>
                 </div>
+            </div>
 
-                {/* Products Grid */}
+            <div
+                style={{ maxWidth: '1400px', margin: '0 auto', padding: '64px 80px 120px' }}
+                className="px-6 md:px-[80px]"
+            >
                 {productsInCategory.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '48px 32px' }}>
                         {productsInCategory.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl p-16 text-center">
-                        <p className="text-slate-500 text-lg mb-4">No products available in this category yet.</p>
-                        <Link to="/products" className="text-amber-500 font-semibold hover:text-amber-600">
+                    <div style={{ padding: '80px 0', textAlign: 'center' }}>
+                        <p className="font-caslon" style={{ fontSize: '24px', color: 'var(--on-surface)', marginBottom: '16px' }}>
+                            No products in this category yet.
+                        </p>
+                        <Link
+                            to="/products"
+                            className="label-caps"
+                            style={{ color: 'var(--on-surface)', textDecoration: 'underline' }}
+                        >
                             Browse All Products
                         </Link>
                     </div>
