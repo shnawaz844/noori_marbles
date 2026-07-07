@@ -51,6 +51,10 @@ const LoginPage: React.FC = () => {
           .select('role')
           .eq('id', data.user.id)
           .single();
+        if (profile?.role) {
+          localStorage.setItem('noori_user_role', profile.role);
+          localStorage.setItem('noori_user_id', data.user.id);
+        }
         if (profile?.role === 'admin') {
           navigate('/admin', { replace: true });
         } else {

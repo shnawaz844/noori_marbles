@@ -4,6 +4,17 @@ import { User } from '@supabase/supabase-js';
 
 type Role = 'customer' | 'admin' | null;
 
+const ROLE_KEY = 'noori_user_role';
+const USER_KEY = 'noori_user_id';
+
+const getStoredRole = (): Role => {
+  try {
+    return (localStorage.getItem(ROLE_KEY) as Role) ?? null;
+  } catch {
+    return null;
+  }
+};
+
 interface AuthContextType {
   user: User | null;
   role: Role;
@@ -16,83 +27,113 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<Role>(null);
+  const [role, setRole] = useState<Role>(getStoredRole);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    const checkUser = async () => {
-      setIsLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchRole(session.user.id);
-      } else {
+    let mounted = true;
+
+    // getSession() is the guaranteed way to restore session on page load.
+    // We call setIsLoading(false) immediately after — never await role fetch.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (!currentUser) {
+        // No active session — clear stale cached role
         setRole(null);
+        localStorage.removeItem(ROLE_KEY);
+        localStorage.removeItem(USER_KEY);
+      } else {
+        // Fetch role from DB in background (don't block loading)
+        fetchAndSetRole(currentUser.id);
       }
+
+      // Always unblock the UI immediately after we know the session state
       setIsLoading(false);
-    };
+    });
 
-    checkUser();
+    // Subscribe to future auth changes (login, logout, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      if (_event === 'INITIAL_SESSION') return; // Already handled by getSession above
 
-    // Listen for changes on auth state (log in, log out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchRole(session.user.id);
-        } else {
-          setRole(null);
-        }
-        setIsLoading(false);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+
+      if (!currentUser) {
+        setRole(null);
+        localStorage.removeItem(ROLE_KEY);
+        localStorage.removeItem(USER_KEY);
+      } else {
+        fetchAndSetRole(currentUser.id);
       }
-    );
+
+      setIsLoading(false);
+    });
+
+    // Hard safety timeout: ensure we never get stuck on loading screen
+    const timeout = setTimeout(() => {
+      if (mounted) setIsLoading(false);
+    }, 3000);
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
+      clearTimeout(timeout);
     };
   }, []);
 
-  const fetchRole = async (userId: string) => {
+  const fetchAndSetRole = async (userId: string, attempt = 1): Promise<void> => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', userId)
         .single();
-        
+
       if (error) {
-        console.error('Error fetching user role:', error.message);
-        setRole('customer'); // Default to customer if error (e.g. no profile yet)
-      } else if (data) {
+        console.error(`fetchRole error (attempt ${attempt}):`, error.message);
+        if (attempt < 3) {
+          await new Promise(r => setTimeout(r, 500 * attempt));
+          return fetchAndSetRole(userId, attempt + 1);
+        }
+        // Keep cached role on failure — don't overwrite with 'customer'
+        return;
+      }
+
+      if (data?.role) {
         setRole(data.role as Role);
+        localStorage.setItem(ROLE_KEY, data.role);
+        localStorage.setItem(USER_KEY, userId);
       }
     } catch (err) {
-      console.error('Failed to fetch role:', err);
-      setRole('customer');
+      console.error(`fetchRole exception (attempt ${attempt}):`, err);
+      if (attempt < 3) {
+        await new Promise(r => setTimeout(r, 500 * attempt));
+        return fetchAndSetRole(userId, attempt + 1);
+      }
     }
   };
 
   const logout = async () => {
-    // Preserve noori-cart
+    localStorage.removeItem(ROLE_KEY);
+    localStorage.removeItem(USER_KEY);
+
     const savedCart = localStorage.getItem('noori-cart');
 
     await supabase.auth.signOut({ scope: 'global' });
 
-    // Clear every token and cached session data from local and session storage
     localStorage.clear();
     sessionStorage.clear();
 
-    // Restore noori-cart
     if (savedCart) {
       localStorage.setItem('noori-cart', savedCart);
     }
 
-    // onAuthStateChange will fire and set user/role to null automatically.
-    // Use replace so the user can't go back to a protected page.
     window.location.replace('/login');
   };
-
 
   const isAuthenticated = !!user;
 

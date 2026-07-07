@@ -72,8 +72,8 @@ const AdminDashboard: React.FC = () => {
     const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
     const [quantityLoadingId, setQuantityLoadingId] = useState<string | null>(null);
 
-    const [formData, setFormData] = useState<Partial<Product>>({
-        name: '', category: '', price: 0, quantity: 0, description: '', image: '', inStock: true, hotspots: []
+    const [formData, setFormData] = useState<Partial<Product> & { price?: number | string; quantity?: number | string; originalPrice?: number | string }>({
+        name: '', category: '', price: '', quantity: '', unit: 'piece', originalPrice: '', description: '', image: '', inStock: true, hotspots: []
     });
 
     useEffect(() => {
@@ -92,7 +92,7 @@ const AdminDashboard: React.FC = () => {
         p.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleEdit = (product: Product) => { setEditingId(product.id); setFormData(product); setIsAdding(true); };
+    const handleEdit = (product: Product) => { setEditingId(product.id); setFormData({ ...product, unit: product.unit || 'piece' }); setIsAdding(true); };
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Delete this product? This cannot be undone.')) {
@@ -104,15 +104,22 @@ const AdminDashboard: React.FC = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            if (editingId) { await updateProduct(formData as Product); }
-            else { await addProduct({ ...formData, id: Math.random().toString(36).substr(2, 9) } as Product); }
+            const productToSave = {
+                ...formData,
+                unit: formData.unit || 'piece',
+                price: Number(formData.price) || 0,
+                originalPrice: formData.originalPrice !== '' && formData.originalPrice !== undefined && Number(formData.originalPrice) > 0 ? Number(formData.originalPrice) : undefined,
+                quantity: Number(formData.quantity) || 0,
+            } as Product;
+            if (editingId) { await updateProduct(productToSave); }
+            else { await addProduct({ ...productToSave, id: Math.random().toString(36).substr(2, 9) }); }
             resetForm();
         } catch { alert('Failed to save product.'); } finally { setLoading(false); }
     };
 
     const resetForm = () => {
         setEditingId(null); setIsAdding(false); setLastClick(null);
-        setFormData({ name: '', category: '', price: 0, quantity: 0, unit: 'piece', description: '', image: '', inStock: true, hotspots: [] });
+        setFormData({ name: '', category: '', price: '', quantity: '', unit: 'piece', originalPrice: '', description: '', image: '', inStock: true, hotspots: [] });
     };
 
     const handleQuantityChange = async (product: Product, delta: number) => {
@@ -295,7 +302,7 @@ const AdminDashboard: React.FC = () => {
                                                         <p style={{ fontWeight: 600, fontSize: '13px', marginBottom: '2px' }}>{product.name}</p>
                                                         <p style={{ fontSize: '10px', color: '#747878', fontFamily: 'monospace' }}>
                                                             {product.hotspots && product.hotspots.length > 0 && (
-                                                                <span style={{ marginRight: '6px', color: '#1a1c1c', fontWeight: 700 }}>{product.hotspots.length} hotspots</span>
+                                                                <span style={{ marginRight: '6px', fontWeight: 700 }}>{product.hotspots.length} hotspots</span>
                                                             )}
                                                             {product.id}
                                                         </p>
@@ -308,8 +315,13 @@ const AdminDashboard: React.FC = () => {
                                                 </span>
                                             </td>
                                             <td style={{ ...tdStyle, textAlign: 'right', fontWeight: 600 }}>
-                                                ₹{product.price.toLocaleString('en-IN')}
-                                                <span style={{ fontSize: '10px', color: '#747878', fontWeight: 400 }}>/{product.unit || 'pc'}</span>
+                                                {product.originalPrice && Number(product.originalPrice) > Number(product.price) && (
+                                                    <span style={{ textDecoration: 'line-through', color: '#747878', fontSize: '11px', marginRight: '6px', fontWeight: 400 }}>
+                                                        ₹{Number(product.originalPrice).toLocaleString('en-IN')}
+                                                    </span>
+                                                )}
+                                                ₹{Number(product.price).toLocaleString('en-IN')}
+                                                <span style={{ fontSize: '10px', color: '#747878', fontWeight: 400 }}>/{product.unit || 'piece'}</span>
                                             </td>
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
@@ -591,22 +603,31 @@ const AdminDashboard: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }} className="grid-cols-1 sm:grid-cols-3">
                                             <div>
-                                                <label style={adminLabel}>Price (₹)</label>
-                                                <input type="number" required value={formData.price}
-                                                    onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
+                                                <label style={adminLabel}>Price (₹) *</label>
+                                                <input type="number" required min="0" placeholder="0" value={formData.price ?? ''}
+                                                    onChange={e => setFormData({ ...formData, price: e.target.value === '' ? '' : Number(e.target.value) })}
                                                     style={adminInput}
-                                                    onFocus={e => (e.target.style.borderColor = 'var(--on-surface)')}
+                                                    onFocus={e => { e.target.style.borderColor = 'var(--on-surface)'; e.target.select(); }}
                                                     onBlur={e => (e.target.style.borderColor = 'var(--outline-variant)')}
                                                 />
                                             </div>
                                             <div>
-                                                <label style={adminLabel}>Quantity</label>
-                                                <input type="number" min="0" required value={formData.quantity ?? 0}
-                                                    onChange={e => setFormData({ ...formData, quantity: Math.max(0, Number(e.target.value)) })}
+                                                <label style={adminLabel}>Original Price (₹)</label>
+                                                <input type="number" min="0" placeholder="Optional MRP" value={formData.originalPrice ?? ''}
+                                                    onChange={e => setFormData({ ...formData, originalPrice: e.target.value === '' ? '' : Number(e.target.value) })}
                                                     style={adminInput}
-                                                    onFocus={e => (e.target.style.borderColor = 'var(--on-surface)')}
+                                                    onFocus={e => { e.target.style.borderColor = 'var(--on-surface)'; e.target.select(); }}
+                                                    onBlur={e => (e.target.style.borderColor = 'var(--outline-variant)')}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={adminLabel}>Quantity *</label>
+                                                <input type="number" min="0" required placeholder="0" value={formData.quantity ?? ''}
+                                                    onChange={e => setFormData({ ...formData, quantity: e.target.value === '' ? '' : Math.max(0, Number(e.target.value)) })}
+                                                    style={adminInput}
+                                                    onFocus={e => { e.target.style.borderColor = 'var(--on-surface)'; e.target.select(); }}
                                                     onBlur={e => (e.target.style.borderColor = 'var(--outline-variant)')}
                                                 />
                                             </div>

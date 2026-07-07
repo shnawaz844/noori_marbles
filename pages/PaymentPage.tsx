@@ -85,26 +85,26 @@ const PaymentPage: React.FC = () => {
     return (
         <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
             {/* Page header */}
-            <div style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '64px 80px 48px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
+            <div style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '36px 80px 28px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
                 className="px-6 md:px-[80px]">
-                <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>Step 3 of 3</p>
-                    <h1 className="font-caslon" style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'var(--on-surface)' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h1 className="font-caslon" style={{ fontSize: '32px', fontWeight: 400, color: 'var(--on-surface)', margin: 0 }}>
                         Payment
                     </h1>
+                    <p className="label-caps" style={{ color: 'var(--outline)', margin: 0 }}>Step 3 of 3</p>
                 </div>
             </div>
 
-            <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '64px 80px 120px' }}
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 80px 80px' }}
                 className="px-6 md:px-[80px]">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '80px', alignItems: 'start' }}
-                    className="grid-cols-1 lg:grid-cols-[1fr_300px]">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '64px', alignItems: 'start' }}
+                    className="grid-cols-1 lg:grid-cols-[1fr_340px]">
 
                     {/* Payment Methods */}
                     <div>
-                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '24px' }}>Select Method</p>
+                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>Select Method</p>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '40px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
                             {paymentMethods.map(method => {
                                 const isSelected = selectedMethod === method.type;
                                 return (
@@ -114,8 +114,8 @@ const PaymentPage: React.FC = () => {
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '20px',
-                                            padding: '20px 24px',
+                                            gap: '16px',
+                                            padding: '16px 20px',
                                             border: `1px solid ${isSelected ? 'var(--on-surface)' : 'var(--outline-variant)'}`,
                                             backgroundColor: isSelected ? 'var(--on-surface)' : 'var(--surface-white)',
                                             cursor: 'pointer',
@@ -148,31 +148,38 @@ const PaymentPage: React.FC = () => {
 
                         {/* UPI Form */}
                         {selectedMethod === PaymentMethod.UPI && (
-                            <div style={{ border: '1px solid var(--outline-variant)', padding: '32px', marginBottom: '32px' }}>
-                                <div style={{ marginBottom: '32px' }}>
-                                    <label style={labelStyle}>UPI ID</label>
-                                    <input
-                                        type="text"
-                                        placeholder="yourname@paytm"
-                                        value={upiId}
-                                        onChange={(e) => setUpiId(e.target.value)}
-                                        style={inputStyle}
-                                        onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
-                                        onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
-                                    />
-                                </div>
-                                <div style={{ textAlign: 'center' }}>
-                                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>
-                                        Or scan to pay
-                                    </p>
-                                    <img src={generateUPIQR()} alt="UPI QR Code" style={{ display: 'block', margin: '0 auto' }} />
+                            <div style={{ border: '1px solid var(--outline-variant)', padding: '24px', marginBottom: '28px', backgroundColor: 'var(--surface-white)' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '32px', alignItems: 'center' }}
+                                    className="grid-cols-1 sm:grid-cols-[1fr_auto]">
+                                    <div>
+                                        <label style={labelStyle}>UPI ID</label>
+                                        <input
+                                            type="text"
+                                            placeholder="yourname@paytm"
+                                            value={upiId}
+                                            onChange={(e) => setUpiId(e.target.value)}
+                                            style={inputStyle}
+                                            onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                                            onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+                                        />
+                                        <p style={{ fontSize: '12px', color: 'var(--outline)', marginTop: '8px' }}>
+                                            Enter your registered UPI ID to receive a payment request on your app.
+                                        </p>
+                                    </div>
+                                    <div style={{ textAlign: 'center', borderLeft: '1px solid var(--outline-variant)', paddingLeft: '32px' }}
+                                        className="border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 pl-0 sm:pl-8">
+                                        <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '12px' }}>
+                                            Or scan to pay
+                                        </p>
+                                        <img src={generateUPIQR()} alt="UPI QR Code" style={{ display: 'block', margin: '0 auto', width: '130px', height: '130px' }} />
+                                    </div>
                                 </div>
                             </div>
                         )}
 
                         {/* Card Form */}
                         {selectedMethod === PaymentMethod.CARD && (
-                            <div style={{ border: '1px solid var(--outline-variant)', padding: '32px', marginBottom: '32px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                            <div style={{ border: '1px solid var(--outline-variant)', padding: '24px', marginBottom: '28px', backgroundColor: 'var(--surface-white)', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                 <div>
                                     <label style={labelStyle}>Card Number</label>
                                     <input type="text" placeholder="1234 5678 9012 3456"
@@ -181,7 +188,7 @@ const PaymentPage: React.FC = () => {
                                         onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
                                     />
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                                     <div>
                                         <label style={labelStyle}>Expiry Date</label>
                                         <input type="text" placeholder="MM/YY"
@@ -204,18 +211,18 @@ const PaymentPage: React.FC = () => {
 
                         {/* Wallet Options */}
                         {selectedMethod === PaymentMethod.WALLET && (
-                            <div style={{ border: '1px solid var(--outline-variant)', padding: '32px', marginBottom: '32px' }}>
-                                <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '20px' }}>Select Wallet</p>
-                                <div style={{ display: 'flex', gap: '8px' }}>
+                            <div style={{ border: '1px solid var(--outline-variant)', padding: '24px', marginBottom: '28px', backgroundColor: 'var(--surface-white)' }}>
+                                <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>Select Wallet</p>
+                                <div style={{ display: 'flex', gap: '10px' }}>
                                     {['Paytm', 'PhonePe', 'Amazon Pay'].map(wallet => (
                                         <button key={wallet} style={{
                                             flex: 1, padding: '14px 8px', border: '1px solid var(--outline-variant)',
-                                            background: 'var(--surface-white)', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-                                            fontSize: '12px', fontWeight: 600, color: 'var(--on-surface)',
-                                            transition: 'border-color 0.2s',
+                                            background: 'var(--surface)', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+                                            fontSize: '13px', fontWeight: 600, color: 'var(--on-surface)',
+                                            transition: 'border-color 0.2s, background 0.2s',
                                         }}
-                                            onMouseOver={e => (e.currentTarget.style.borderColor = 'var(--on-surface)')}
-                                            onMouseOut={e => (e.currentTarget.style.borderColor = 'var(--outline-variant)')}
+                                            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--on-surface)'; e.currentTarget.style.background = 'var(--surface-white)'; }}
+                                            onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--outline-variant)'; e.currentTarget.style.background = 'var(--surface)'; }}
                                         >{wallet}</button>
                                     ))}
                                 </div>
@@ -224,8 +231,8 @@ const PaymentPage: React.FC = () => {
 
                         {/* COD Info */}
                         {selectedMethod === PaymentMethod.COD && (
-                            <div style={{ border: '1px solid var(--outline-variant)', padding: '24px', marginBottom: '32px' }}>
-                                <p style={{ fontSize: '14px', color: 'var(--on-surface-variant)', lineHeight: '22px' }}>
+                            <div style={{ border: '1px solid var(--outline-variant)', padding: '20px 24px', marginBottom: '28px', backgroundColor: 'var(--surface-white)' }}>
+                                <p style={{ fontSize: '14px', color: 'var(--on-surface-variant)', lineHeight: '22px', margin: 0 }}>
                                     <strong>Cash on Delivery</strong> — Pay in cash when the product is delivered to your doorstep.
                                 </p>
                             </div>
@@ -240,7 +247,7 @@ const PaymentPage: React.FC = () => {
                                 backgroundColor: !selectedMethod || processing ? 'var(--outline-variant)' : 'var(--on-surface)',
                                 color: !selectedMethod || processing ? 'var(--outline)' : 'var(--surface-white)',
                                 border: '1px solid var(--on-surface)',
-                                padding: '18px',
+                                padding: '16px',
                                 fontFamily: 'Inter, sans-serif',
                                 fontSize: '11px',
                                 fontWeight: 600,
@@ -253,18 +260,18 @@ const PaymentPage: React.FC = () => {
                                 gap: '10px',
                                 transition: 'background 0.25s, color 0.25s',
                             }}
-                            onMouseOver={e => {
-                                if (selectedMethod && !processing) {
-                                    e.currentTarget.style.background = 'transparent';
-                                    e.currentTarget.style.color = 'var(--on-surface)';
-                                }
-                            }}
-                            onMouseOut={e => {
-                                if (selectedMethod && !processing) {
-                                    e.currentTarget.style.background = 'var(--on-surface)';
-                                    e.currentTarget.style.color = 'var(--surface-white)';
-                                }
-                            }}
+                                onMouseOver={e => {
+                                    if (selectedMethod && !processing) {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.color = 'var(--on-surface)';
+                                    }
+                                }}
+                                onMouseOut={e => {
+                                    if (selectedMethod && !processing) {
+                                        e.currentTarget.style.background = 'var(--on-surface)';
+                                        e.currentTarget.style.color = 'var(--surface-white)';
+                                    }
+                                }}
                         >
                             {processing
                                 ? <><Loader2 size={16} className="animate-spin" /> Processing…</>
@@ -274,14 +281,14 @@ const PaymentPage: React.FC = () => {
                     </div>
 
                     {/* Summary */}
-                    <div style={{ position: 'sticky', top: '100px', border: '1px solid var(--outline-variant)', padding: '32px', backgroundColor: 'var(--surface-white)' }}>
-                        <h2 className="font-caslon" style={{ fontSize: '20px', fontWeight: 400, color: 'var(--on-surface)', marginBottom: '24px' }}>
+                    <div style={{ position: 'sticky', top: '96px', border: '1px solid var(--outline-variant)', padding: '28px', backgroundColor: 'var(--surface-white)' }}>
+                        <h2 className="font-caslon" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--on-surface)', margin: '0 0 20px 0' }}>
                             Summary
                         </h2>
-                        <div style={{ borderTop: '1px solid var(--outline-variant)', paddingTop: '16px', marginBottom: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0' }}>
+                        <div style={{ borderTop: '1px solid var(--outline-variant)', paddingTop: '16px', marginBottom: '20px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
                                 <span className="label-caps" style={{ color: 'var(--outline)', alignSelf: 'center' }}>Amount Due</span>
-                                <span style={{ fontSize: '22px', fontWeight: 700, color: 'var(--on-surface)' }}>
+                                <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--on-surface)' }}>
                                     ₹{parseFloat(total).toLocaleString('en-IN')}
                                 </span>
                             </div>
@@ -291,7 +298,7 @@ const PaymentPage: React.FC = () => {
                             <p style={{ fontSize: '14px', color: 'var(--on-surface)', fontWeight: 500, marginBottom: '4px' }}>
                                 {customerInfo.name}
                             </p>
-                            <p style={{ fontSize: '13px', color: 'var(--on-surface-variant)', lineHeight: '22px' }}>
+                            <p style={{ fontSize: '13px', color: 'var(--on-surface-variant)', lineHeight: '22px', margin: 0 }}>
                                 {customerInfo.address}<br />
                                 {customerInfo.city}, {customerInfo.state} — {customerInfo.pincode}<br />
                                 {customerInfo.phone}

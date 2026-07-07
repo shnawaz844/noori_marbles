@@ -1,6 +1,9 @@
+import { useTheme } from '@/contexts/ThemeContext';
 import React from 'react';
 
 const AboutSection: React.FC = () => {
+    const { theme } = useTheme();
+  
   return (
     <section
       id="about"
@@ -38,7 +41,9 @@ const AboutSection: React.FC = () => {
               >
                 25+
               </p>
-              <p className="label-caps" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              <p className="label-caps" style={{ color: theme === 'dark'
+    ? 'rgba(0,0,0,0.55)'
+    : 'rgba(255,255,255,0.55)', }}>
                 Years of Trust
               </p>
             </div>

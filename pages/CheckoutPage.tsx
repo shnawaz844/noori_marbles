@@ -97,24 +97,25 @@ const CheckoutPage: React.FC = () => {
     return (
         <div style={{ minHeight: '100vh', backgroundColor: 'var(--surface)', paddingTop: '64px', transition: 'background-color 0.4s ease' }}>
             {/* Page header */}
-            <div style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '64px 80px 48px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
+            <div style={{ backgroundColor: 'var(--surface-white)', borderBottom: '1px solid var(--outline-variant)', padding: '36px 80px 28px', transition: 'background-color 0.4s ease, border-color 0.4s ease' }}
                 className="px-6 md:px-[80px]">
-                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                    <p className="label-caps" style={{ color: 'var(--outline)', marginBottom: '16px' }}>Step 2 of 3</p>
-                    <h1 className="font-caslon" style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 400, color: 'var(--on-surface)' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h1 className="font-caslon" style={{ fontSize: '32px', fontWeight: 400, color: 'var(--on-surface)', margin: 0 }}>
                         Shipping Details
                     </h1>
+                    <p className="label-caps" style={{ color: 'var(--outline)', margin: 0 }}>Step 2 of 3</p>
                 </div>
             </div>
 
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '64px 80px 120px' }}
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 80px 80px' }}
                 className="px-6 md:px-[80px]">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '80px', alignItems: 'start' }}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '64px', alignItems: 'start' }}
                     className="grid-cols-1 lg:grid-cols-[1fr_340px]">
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                        {/* Row 1: Name, Email */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '36px' }}
                             className="grid-cols-1 sm:grid-cols-2">
                             <div>
                                 <label style={labelStyle}>Full Name *</label>
@@ -138,17 +139,32 @@ const CheckoutPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div>
-                            <label style={labelStyle}>Phone Number *</label>
-                            <input type="tel" name="phone" value={customerInfo.phone}
-                                onChange={handleInputChange} placeholder="9876543210" maxLength={10}
-                                style={errors.phone ? inputErrorStyle : inputStyle}
-                                onFocus={e => { if (!errors.phone) e.target.style.borderBottomColor = 'var(--on-surface)'; }}
-                                onBlur={e => { if (!errors.phone) e.target.style.borderBottomColor = 'var(--outline-variant)'; }}
-                            />
-                            {errors.phone && <p style={{ color: 'var(--error)', fontSize: '11px', marginTop: '4px' }}>{errors.phone}</p>}
+                        {/* Row 2: Phone, City */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '36px' }}
+                            className="grid-cols-1 sm:grid-cols-2">
+                            <div>
+                                <label style={labelStyle}>Phone Number *</label>
+                                <input type="tel" name="phone" value={customerInfo.phone}
+                                    onChange={handleInputChange} placeholder="9876543210" maxLength={10}
+                                    style={errors.phone ? inputErrorStyle : inputStyle}
+                                    onFocus={e => { if (!errors.phone) e.target.style.borderBottomColor = 'var(--on-surface)'; }}
+                                    onBlur={e => { if (!errors.phone) e.target.style.borderBottomColor = 'var(--outline-variant)'; }}
+                                />
+                                {errors.phone && <p style={{ color: 'var(--error)', fontSize: '11px', marginTop: '4px' }}>{errors.phone}</p>}
+                            </div>
+                            <div>
+                                <label style={labelStyle}>City *</label>
+                                <input type="text" name="city" value={customerInfo.city}
+                                    onChange={handleInputChange} placeholder="Bareilly"
+                                    style={errors.city ? inputErrorStyle : inputStyle}
+                                    onFocus={e => { if (!errors.city) e.target.style.borderBottomColor = 'var(--on-surface)'; }}
+                                    onBlur={e => { if (!errors.city) e.target.style.borderBottomColor = 'var(--outline-variant)'; }}
+                                />
+                                {errors.city && <p style={{ color: 'var(--error)', fontSize: '11px', marginTop: '4px' }}>{errors.city}</p>}
+                            </div>
                         </div>
 
+                        {/* Row 3: Street Address */}
                         <div>
                             <label style={labelStyle}>Street Address *</label>
                             <input type="text" name="address" value={customerInfo.address}
@@ -160,18 +176,9 @@ const CheckoutPage: React.FC = () => {
                             {errors.address && <p style={{ color: 'var(--error)', fontSize: '11px', marginTop: '4px' }}>{errors.address}</p>}
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '32px' }}
-                            className="grid-cols-1 sm:grid-cols-3">
-                            <div>
-                                <label style={labelStyle}>City *</label>
-                                <input type="text" name="city" value={customerInfo.city}
-                                    onChange={handleInputChange} placeholder="Bareilly"
-                                    style={errors.city ? inputErrorStyle : inputStyle}
-                                    onFocus={e => { if (!errors.city) e.target.style.borderBottomColor = 'var(--on-surface)'; }}
-                                    onBlur={e => { if (!errors.city) e.target.style.borderBottomColor = 'var(--outline-variant)'; }}
-                                />
-                                {errors.city && <p style={{ color: 'var(--error)', fontSize: '11px', marginTop: '4px' }}>{errors.city}</p>}
-                            </div>
+                        {/* Row 4: State, Pincode */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '36px' }}
+                            className="grid-cols-1 sm:grid-cols-2">
                             <div>
                                 <label style={labelStyle}>State *</label>
                                 <input type="text" name="state" value={customerInfo.state}
@@ -194,7 +201,8 @@ const CheckoutPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '16px', paddingTop: '16px' }}>
+                        {/* Buttons */}
+                        <div style={{ display: 'flex', gap: '16px', paddingTop: '12px' }}>
                             <Link to="/cart" style={{
                                 flex: 1, border: '1px solid var(--outline-variant)', padding: '16px',
                                 textAlign: 'center', textDecoration: 'none', color: 'var(--outline)',
@@ -222,19 +230,19 @@ const CheckoutPage: React.FC = () => {
                     </form>
 
                     {/* Order Summary */}
-                    <div style={{ position: 'sticky', top: '100px', border: '1px solid var(--outline-variant)', padding: '32px', backgroundColor: 'var(--surface-white)' }}>
-                        <h2 className="font-caslon" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--on-surface)', marginBottom: '24px' }}>
+                    <div style={{ position: 'sticky', top: '96px', border: '1px solid var(--outline-variant)', padding: '28px', backgroundColor: 'var(--surface-white)' }}>
+                        <h2 className="font-caslon" style={{ fontSize: '22px', fontWeight: 400, color: 'var(--on-surface)', margin: '0 0 20px 0' }}>
                             Order Summary
                         </h2>
 
-                        <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '0', maxHeight: '240px', overflowY: 'auto' }}>
-                            {cart.map((item, idx) => (
+                        <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '0', maxHeight: '220px', overflowY: 'auto' }}>
+                            {cart.map((item) => (
                                 <div key={item.product.id}
                                     style={{ display: 'flex', gap: '12px', padding: '12px 0', borderBottom: '1px solid var(--outline-variant)' }}>
                                     <img src={item.product.image} alt={item.product.name}
                                         style={{ width: '48px', height: '56px', objectFit: 'cover', flexShrink: 0 }} />
                                     <div style={{ flex: 1 }}>
-                                        <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--on-surface)', marginBottom: '2px' }}>
+                                        <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--on-surface)', marginBottom: '2px', lineHeight: '18px' }}>
                                             {item.product.name}
                                         </p>
                                         <p className="label-caps" style={{ color: 'var(--outline)' }}>Qty: {item.quantity}</p>
@@ -256,7 +264,7 @@ const CheckoutPage: React.FC = () => {
                                     <span style={{ fontSize: '14px', color: 'var(--on-surface)' }}>{row.value}</span>
                                 </div>
                             ))}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0 0 0' }}>
                                 <span className="label-caps" style={{ color: 'var(--on-surface)', alignSelf: 'center' }}>Total</span>
                                 <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--on-surface)' }}>
                                     ₹{Math.round(total).toLocaleString('en-IN')}

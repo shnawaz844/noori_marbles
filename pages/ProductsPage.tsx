@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { CATEGORIES } from '../constants';
 import { useProducts } from '../contexts/ProductContext';
 import ProductCard from '../components/ProductCard';
-import { Search } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -29,8 +30,14 @@ const labelStyle: React.CSSProperties = {
     marginBottom: '10px',
 };
 
+const optionStyle: React.CSSProperties = {
+    backgroundColor: 'var(--surface-white)',
+    color: 'var(--on-surface)',
+};
+
 const ProductsPage: React.FC = () => {
     const { products, categories } = useProducts();
+    const { theme } = useTheme();
     const categoryList = categories && categories.length > 0 ? categories.map(c => c.name) : CATEGORIES;
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -125,35 +132,61 @@ const ProductsPage: React.FC = () => {
                     {/* Category */}
                     <div>
                         <label style={labelStyle}>Category</label>
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            style={{ ...inputStyle, cursor: 'pointer', appearance: 'none' }}
-                            onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
-                            onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
-                        >
-                            <option value="All">All Categories</option>
-                            {categoryList.map(cat => (
-                                <option key={cat} value={cat}>{cat}</option>
-                            ))}
-                        </select>
+                        <div style={{ position: 'relative' }}>
+                            <select
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                style={{ ...inputStyle, cursor: 'pointer', appearance: 'none', paddingRight: '24px', colorScheme: theme }}
+                                onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                                onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+                            >
+                                <option value="All" style={optionStyle}>All Categories</option>
+                                {categoryList.map(cat => (
+                                    <option key={cat} value={cat} style={optionStyle}>{cat}</option>
+                                ))}
+                            </select>
+                            <ChevronDown
+                                size={14}
+                                style={{
+                                    position: 'absolute',
+                                    right: 0,
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: 'var(--outline)',
+                                    pointerEvents: 'none',
+                                }}
+                            />
+                        </div>
                     </div>
 
                     {/* Sort */}
                     <div>
                         <label style={labelStyle}>Sort By</label>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            style={{ ...inputStyle, cursor: 'pointer', appearance: 'none' }}
-                            onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
-                            onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
-                        >
-                            <option value="default">Default Sorting</option>
-                            <option value="name">Name (A–Z)</option>
-                            <option value="price-low">Price (Low to High)</option>
-                            <option value="price-high">Price (High to Low)</option>
-                        </select>
+                        <div style={{ position: 'relative' }}>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                style={{ ...inputStyle, cursor: 'pointer', appearance: 'none', paddingRight: '24px', colorScheme: theme }}
+                                onFocus={e => (e.target.style.borderBottomColor = 'var(--on-surface)')}
+                                onBlur={e => (e.target.style.borderBottomColor = 'var(--outline-variant)')}
+                            >
+                                <option value="default" style={optionStyle}>Default Sorting</option>
+                                <option value="name" style={optionStyle}>Name (A–Z)</option>
+                                <option value="price-low" style={optionStyle}>Price (Low to High)</option>
+                                <option value="price-high" style={optionStyle}>Price (High to Low)</option>
+                            </select>
+                            <ChevronDown
+                                size={14}
+                                style={{
+                                    position: 'absolute',
+                                    right: 0,
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: 'var(--outline)',
+                                    pointerEvents: 'none',
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
 
